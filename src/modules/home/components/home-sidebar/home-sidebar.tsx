@@ -1,9 +1,9 @@
+"use client";
 import {
   Sidebar,
   SidebarContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarFooter,
+  SidebarHeader,
 } from "@/components/ui/sidebar";
 import AuthButton from "@/modules/auth/ui/auth-button";
 import {
@@ -15,66 +15,78 @@ import {
   SearchIcon,
   Youtube,
 } from "lucide-react";
-import Link from "next/link";
+import NavHeader from "./nav-header";
+import NavMain from "./nav-main";
 
-const items = [
-  {
-    title: "홈",
-    url: "/",
-    icon: HomeIcon,
-  },
-  {
-    title: "검색",
-    url: "/",
-    icon: SearchIcon,
-  },
-  {
-    title: "밍스",
-    url: "/",
-    icon: Youtube,
+const data = {
+  user: {
+    name: "",
+    email: "",
+    image: "",
   },
 
-  {
-    title: "메세지",
+  navHeader: {
+    name: "Mingle",
     url: "/",
-    icon: MessagesSquareIcon,
-  },
-  {
-    title: "알림",
-    url: "/",
-    icon: Bell,
-  },
-  {
-    title: "만들기",
-    url: "/",
-    icon: PlusSquare,
+    logo: "/logo.svg",
   },
 
-  {
-    title: "더보기",
-    url: "/",
-    icon: AlignJustify,
-  },
-];
+  navMain: [
+    {
+      title: "홈",
+      url: "/",
+      icon: HomeIcon,
+    },
+    {
+      title: "검색",
+      url: "/",
+      icon: SearchIcon,
+    },
+    {
+      title: "밍스",
+      url: "/",
+      icon: Youtube,
+    },
+
+    {
+      title: "메세지",
+      url: "/",
+      icon: MessagesSquareIcon,
+    },
+    {
+      title: "알림",
+      url: "/",
+      icon: Bell,
+    },
+    {
+      title: "만들기",
+      url: "/",
+      icon: PlusSquare,
+    },
+
+    {
+      title: "더보기",
+      url: "/",
+      icon: AlignJustify,
+    },
+  ],
+};
 
 export default function HomeSidebar() {
   return (
-    <Sidebar>
-      <SidebarContent className="ml-5 mt-10">
-        <SidebarMenu className="flex gap-5">
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
-                <Link href={item.url} className="flex items-center gap-4">
-                  <item.icon />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+    <>
+      <Sidebar collapsible="icon">
+        <SidebarHeader className="py-7">
+          <NavHeader items={data.navHeader} />
+        </SidebarHeader>
+        <SidebarContent className="">
+          <NavMain items={data.navMain} />
+        </SidebarContent>
+        <SidebarFooter>
           <AuthButton />
-        </SidebarMenu>
-      </SidebarContent>
-    </Sidebar>
+        </SidebarFooter>
+        {/* <SidebarRail /> */}
+      </Sidebar>
+    </>
   );
 }
