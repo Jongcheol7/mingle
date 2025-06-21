@@ -9,11 +9,67 @@ datasource db {
 }
 
 model User {
-  id      Int   @id  @default(autoincrement())
-  clerkId String @unique
-  email   String   @unique
-  name    String
-  username String @unique
-  imageUrl String
+  id        Int      @id    @default(autoincrement())
+  clerkId   String   @unique
+  email     String   @unique
+  name      String
+  username  String   @unique
+  imageUrl  String
   createdAt DateTime @default(now())
+
+  posts    Post[]
+  likes    Like[]
+  comments Comment[]
+}
+
+model Post {
+  id        Int      @id   @default(autoincrement())
+  userId    String
+  title     String 
+  content   String 
+  createdAt DateTime @default(now())
+
+  author    User  @relation(fields:[userId], references:[clerkId])
+  medias    PostMedia[]
+  likes     Like[]
+  comments  Comment[]
+}
+
+model PostMedia {
+  id        Int       @id   @default(autoincrement())
+  postId    Int
+  type      MediaType
+  url       String
+  order     Int
+  createdAt DateTime  @default(now())
+
+  post  Post  @relation(fields:[postId], references:[id])
+}
+
+model Like {
+  id        Int       @id   @default(autoincrement())
+  userId    String 
+  postId    Int 
+  createdAt DateTime  @default(now())
+
+  author  User  @relation(fields:[userId], references:[clerkId])
+  post    Post  @relation(fields:[postId], references:[id])
+
+  @@unique([userId, postId])
+}
+
+model Comment {
+  id        Int        @id    @default(autoincrement())
+  userId    String
+  postId    Int
+  content   String
+  createdAt DateTime   @default(now())
+
+  author  User  @relation(fields:[userId], references:[clerkId])
+  post    Post  @relation(fields:[postId], references:[id])
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
 }

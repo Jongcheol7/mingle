@@ -66,7 +66,7 @@ export async function POST(req: Request) {
           clerkId: data.id,
           name: `${data.first_name} ${data.last_name}`,
           email: data.email_addresses[0]?.email_address ?? "",
-          username: data.username,
+          username: data.username ?? `user_${data.id}`,
           imageUrl: data.image_url,
         },
       });
@@ -104,7 +104,7 @@ export async function POST(req: Request) {
       where: { clerkId: data.id },
       data: {
         name: `${data.first_name} ${data.last_name}`,
-        username: data.username,
+        username: data.username ?? `user_${data.id}`,
         imageUrl: data.image_url,
       },
     });

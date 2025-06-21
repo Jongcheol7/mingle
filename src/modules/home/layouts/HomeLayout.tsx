@@ -16,8 +16,10 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
         <HomeSidebar />
         {/* SidebarInset : 사이드바 옆의 메인 콘텐츠 영역을 감싸주는 wrapper 역할 */}
         <SidebarInset>
-          <SidebarTrigger />
-          <main className="flex-1">{children}</main>
+          <div className="flex">
+            <SidebarTrigger className="w-[20px] pr-0 mr-0" />
+            <main className="flex-1">{children}</main>
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </div>

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import ReactQueryProvider from "@/modules/common/ReactQueryProvider";
+import HomeLayout from "@/modules/home/layouts/HomeLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,9 @@ export default function RootLayout({
     <ClerkProvider afterSignOutUrl={"/"}>
       <html lang="en">
         <body className={inter.className}>
-          <ReactQueryProvider>{children}</ReactQueryProvider>
+          <ReactQueryProvider>
+            <HomeLayout>{children}</HomeLayout>
+          </ReactQueryProvider>
         </body>
       </html>
     </ClerkProvider>

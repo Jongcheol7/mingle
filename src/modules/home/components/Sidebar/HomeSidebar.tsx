@@ -60,7 +60,7 @@ const data = {
     },
     {
       title: "만들기",
-      url: "/",
+      url: "/post/new",
       icon: PlusSquare,
     },
 

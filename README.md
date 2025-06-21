@@ -35,3 +35,11 @@ model 명은 첫글자 대문자 권고. 이후에 prisma 는 소문자로 접�
 경로를 profile 로 지정함. 또 여기서 page.tsx 를 app/profile 하위에 두자니 catch-all 라우트로 반드시 해야한다는 에러로
 app/profile/[[...profile]] 경로에 두었다. 별도의 Link 와 Button(shadcn) 으로 "/" 로 이동 하도록해서
 db user 최신 상태를 가져오도록 한다.
+
+## 사진이나 영상 업로드 화면 구성
+
+기본적으로 app 하위 폴더는 페이지 전용으로 각 page.tsx 에서는 화면이나 레이아웃을 구성할 컴포넌트를 렌더링한다.
+나는 modules/post/ui 하위에 화면을 구성할 파일들을 넣어두었다.
+shadcd 기반으로 설정해놨다. 그리고 파일을 드래그 해서 업로드 할수 있도록 "npm i react-dropzone" 패키지 설치후 적용했다.
+파일을 넣는순간 해당 파일이 image 인지 video 인지 판단한다. 단 파일은 해당 페이지에서는 1개만 업로드 할수 있음.
+image 파일이라면 <ImageUpload> 컴포넌트 호출, video 파일이라면 <VideoUpload> 컴포넌트 호출
