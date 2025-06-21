@@ -3,7 +3,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import HomeSidebar from "../components/home-sidebar/home-sidebar";
+import HomeSidebar from "../components/Sidebar/HomeSidebar";
 
 interface HomeLayoutProps {
   children: React.ReactNode;

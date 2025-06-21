@@ -1,14 +1,10 @@
-"use client";
-import { useAuth, useClerk } from "@clerk/nextjs";
+import UserInitializer from "@/modules/auth/common/UserInitializer";
 
-export default function Home() {
-  const clerk = useClerk();
-  const { isSignedIn } = useAuth();
-  console.log("clerk : ", clerk);
-  console.log("isSignedIn : ", isSignedIn);
+export default async function Home() {
   return (
     <div>
-      <p>테스트 홈페이지</p>
+      <UserInitializer />
+      <p>홈페이지</p>
     </div>
   );
 }

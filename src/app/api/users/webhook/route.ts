@@ -1,10 +1,8 @@
 import { Webhook } from "svix";
-//import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
-
-//import { db } from "@/db";
-//import { users } from "@/db/schema";
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const SIGNING_SECRET = process.env.CLERK_SIGNING_SECRET;
@@ -26,7 +24,7 @@ export async function POST(req: Request) {
 
   // If there are no headers, error out
   if (!svix_id || !svix_timestamp || !svix_signature) {
-    return new Response("Error: Missing Svix headers", {
+    return new NextResponse("Error: Missing Svix headers", {
       status: 400,
     });
   }
@@ -46,7 +44,7 @@ export async function POST(req: Request) {
     }) as WebhookEvent;
   } catch (err) {
     console.error("Error: Could not verify webhook:", err);
-    return new Response("Error: Verification error", {
+    return new NextResponse("Error: Verification error", {
       status: 400,
     });
   }
@@ -58,34 +56,60 @@ export async function POST(req: Request) {
   if (eventType === "user.created") {
     const { data } = evt;
 
-    // await db.insert(users).values({
-    //   clerkId: data.id,
-    //   name: `${data.first_name} ${data.last_name}`,
-    //   imageUrl: data.image_url,
-    // });
+    // 이미 존재한 유저인지 판단하자.
+    const existingUser = await prisma.user.findUnique({
+      where: { clerkId: data.id },
+    });
+    if (!existingUser) {
+      await prisma.user.create({
+        data: {
+          clerkId: data.id,
+          name: `${data.first_name} ${data.last_name}`,
+          email: data.email_addresses[0]?.email_address ?? "",
+          username: data.username,
+          imageUrl: data.image_url,
+        },
+      });
+      console.log("✅ User Inserted in DB");
+    } else {
+      console.log("이미 존재하는 User 입니다.");
+    }
   }
 
   if (eventType === "user.deleted") {
     const { data } = evt;
 
+    // id가 있을때만 삭제하도록 안전장치
     if (!data.id) {
-      return new Response("Missing user id", { status: 400 });
+      console.error("Missing user ID");
+      return new NextResponse("Missing user Id", { status: 400 });
     }
 
-    //await db.delete(users).where(eq(users.clerkId, data.id));
+    await prisma.user.delete({
+      where: { clerkId: data.id },
+    });
+    console.log("✅ User Deleted in DB");
   }
 
   if (eventType === "user.updated") {
     const { data } = evt;
 
-    // await db
-    //   .update(users)
-    //   .set({
-    //     name: `${data.first_name} ${data.last_name}`,
-    //     imageUrl: data.image_url,
-    //   })
-    //   .where(eq(users.clerkId, data.id));
+    // id가 있을때만 삭제하도록 안전장치
+    if (!data.id) {
+      console.error("Missing user ID");
+      return new NextResponse("Missing user Id", { status: 400 });
+    }
+
+    await prisma.user.update({
+      where: { clerkId: data.id },
+      data: {
+        name: `${data.first_name} ${data.last_name}`,
+        username: data.username,
+        imageUrl: data.image_url,
+      },
+    });
+    console.log("✅ User updated in DB");
   }
 
-  return new Response("Webhook received", { status: 200 });
+  return new NextResponse("Webhook received", { status: 200 });
 }

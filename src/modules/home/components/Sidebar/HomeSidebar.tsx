@@ -5,7 +5,7 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import AuthButton from "@/modules/auth/ui/auth-button";
+import AuthButton from "@/modules/auth/ui/AuthButton";
 import {
   AlignJustify,
   Bell,
@@ -15,8 +15,8 @@ import {
   SearchIcon,
   Youtube,
 } from "lucide-react";
-import NavHeader from "./nav-header";
-import NavMain from "./nav-main";
+import NavHeader from "./NavHeader";
+import NavMain from "./NavMain";
 
 const data = {
   user: {

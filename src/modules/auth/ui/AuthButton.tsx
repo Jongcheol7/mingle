@@ -1,12 +1,16 @@
+"use client";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useUserStore } from "@/lib/store/useUserStore";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { UserCircle } from "lucide-react";
 
 export default function AuthButton() {
+  const { user } = useUserStore();
+  console.log("저스탠드의 user : ", user);
   return (
     <>
       <SidebarMenu className="flex flex-col gap-5">
@@ -17,8 +21,11 @@ export default function AuthButton() {
           >
             <SignedIn>
               <div className="flex items-center gap-2">
-                <UserButton />
-                <span className="font-semibold">프로필</span>
+                <UserButton
+                  userProfileMode="navigation"
+                  userProfileUrl="/profile"
+                />
+                <span className="font-semibold">{user?.username}</span>
               </div>
             </SignedIn>
 
