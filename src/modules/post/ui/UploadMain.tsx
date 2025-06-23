@@ -7,30 +7,33 @@ import { useDropzone } from "react-dropzone";
 import ImageUpload from "./ImageUpload";
 
 export default function UploadMain() {
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File[]>([]);
   const [fileType, setFileType] = useState<"image" | "video" | null>(null);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 0) {
-      alert("사진이나 동영상만 업로드 가능합니다.");
-      return false;
-    }
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length === 0) {
+        alert("사진이나 동영상만 업로드 가능합니다.");
+        return false;
+      }
 
-    const uploadFile = acceptedFiles[0];
-    const fileType = uploadFile.type.startsWith("image")
-      ? "image"
-      : uploadFile.type.startsWith("video")
-      ? "video"
-      : null;
+      const uploadFile = acceptedFiles[0];
+      const fileType = uploadFile.type.startsWith("image")
+        ? "image"
+        : uploadFile.type.startsWith("video")
+        ? "video"
+        : null;
 
-    if (!fileType) {
-      alert("이미지 또는 동영상만 업로드 가능합니다.");
-      return;
-    }
+      if (!fileType) {
+        alert("이미지 또는 동영상만 업로드 가능합니다.");
+        return;
+      }
 
-    setFile(uploadFile);
-    setFileType(fileType);
-  }, []);
+      setFile([...file, uploadFile]);
+      setFileType(fileType);
+    },
+    [file]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -49,11 +52,11 @@ export default function UploadMain() {
   }
 
   return (
-    <div className="h-screen min-h-screen">
+    <div className="flex h-screen min-h-screen">
       {/* <h1>동영상.사진 업로드</h1> */}
       <Card
         {...getRootProps()}
-        className="ml-5 mr-10 px-1 my-10 h-[calc(100vh-70px)] flex items-center justify-center shadow-xl"
+        className="flex-1 ml-5 mr-10 px-1 mt-8 h-[calc(100vh-70px)] flex items-center justify-center shadow-xl"
       >
         <input {...getInputProps()} />
         <UploadIcon className="w-12 h-12 text-muted-foreground" />

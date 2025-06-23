@@ -43,3 +43,17 @@ db user 최신 상태를 가져오도록 한다.
 shadcd 기반으로 설정해놨다. 그리고 파일을 드래그 해서 업로드 할수 있도록 "npm i react-dropzone" 패키지 설치후 적용했다.
 파일을 넣는순간 해당 파일이 image 인지 video 인지 판단한다. 단 파일은 해당 페이지에서는 1개만 업로드 할수 있음.
 image 파일이라면 <ImageUpload> 컴포넌트 호출, video 파일이라면 <VideoUpload> 컴포넌트 호출
+
+<ImageUpload> 컴포넌트 : "npm i react-easy-crop" 설치를 하여 사진을 쉽게 크기조정 가능하도록 한다.
+그리고 밝기,채도,대비,흐리게,주변어둡게를 shadcn의 Slider 컴포넌트를 활용. 조정시마다 각각 상태를 즉각 반영하고
+Cropper 를 감싸는 div 태그의 style로 세팅해준다.
+슬라이더 우측상단에 초기값 버튼을 만들어 클릭시 초기값으로 재세팅.
+
+문제: 초기에 파일 하나만 넘어왔기 때문에 여기서 사진파일을 추가로 넣을수 있어야 한다.
+나는 인스타그램처럼 +버튼을 만들고 클릭시 사진리스트와 추가할수 있는 버튼을 보이고 싶고, 사진들은 드래그로
+순서도 변경 가능해야한다. 따라서 아래 패키기를 추가해준다.
+npm install embla-carousel-react
+npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/modifiers
+embla-carousel-react : 좌우 슬라이드 기능 제공, 모바일 터치도 지원
+@dnd-kit/core : 드래그 드롭 기능. 어디떨어졌는지 계산(onDragEnd, collisionDetection)
+@dnd-kit/sortable : 여러 요소를 드래그로 정렬 할수 있게 해줌.
