@@ -14,9 +14,15 @@ type Props = {
   files: File[]; // 부모로부터 전달받는 이미지 파일들
   setShowImgList: (value: boolean) => void; // 이미지 리스트 창 닫기용 함수
   setFiles: (value: File[]) => void;
+  setCurrentIdx: (value: number) => void;
 };
 
-export default function ImageList({ files, setShowImgList, setFiles }: Props) {
+export default function ImageSelector({
+  files,
+  setShowImgList,
+  setFiles,
+  setCurrentIdx,
+}: Props) {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null); // 파일 input DOM을 직접 조작하기 위한 ref
 
@@ -57,6 +63,7 @@ export default function ImageList({ files, setShowImgList, setFiles }: Props) {
               onClick={() => {
                 setFiles(imageFiles);
                 setShowImgList(false);
+                setCurrentIdx(0);
               }}
             >
               순서 및 추가 사진 저장하기
