@@ -13,6 +13,7 @@ export default function UploadWrite() {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
   const router = useRouter();
+  const [tags, setTags] = useState([]);
 
   useEffect(() => {
     if (saveFiles.length === 0) {
@@ -28,6 +29,28 @@ export default function UploadWrite() {
       return () => URL.revokeObjectURL(url);
     }
   }, [saveFiles, currentIdx]);
+
+  // 태그 추가 이벤트
+  const handleTagsKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing) return; // 한글 조합 중이면 무시
+    const keys = ["Enter", "Tab"];
+    if (keys.includes(e.key)) {
+      e.preventDefault();
+      if (tags.length >= 10) {
+        return alert("태그는 최대 10개까지 추가 가능합니다.");
+      }
+      const value = e.currentTarget.value.trim().toLowerCase();
+      if (value && !tags.includes(value)) {
+        setTags((prev) => [...prev, value]);
+        e.target.value = "";
+      }
+    }
+  };
+
+  // 태그 삭제 이벤트
+  const handleTagDelete = (deleteTag) => {
+    setTags((prev) => prev.filter((tag) => tag !== deleteTag));
+  };
 
   return (
     <div className="flex h-screen">
@@ -85,6 +108,46 @@ export default function UploadWrite() {
             <Button variant="outline" className="text-sm px-3 py-1">
               저장
             </Button>
+          </div>
+          <div>
+            <textarea placeholder="내용을 입력하세요." />
+            {/* 태그 */}
+            <div>
+              <label
+                htmlFor="tags"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                태그
+              </label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm"
+                  >
+                    #{tag}
+                    <button
+                      onClick={() => handleTagDelete(tag)}
+                      className="ml-2 text-green-600 hover:text-red-500 font-bold"
+                    >
+                      x
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <input
+                type="text"
+                placeholder="Enter나 Tab으로 태그 추가"
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                onKeyDown={handleTagsKeyDown}
+              />
+              <input
+                type="hidden"
+                name="tags"
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                value={tags.join(",")}
+              />
+            </div>
           </div>
         </div>
       </Card>

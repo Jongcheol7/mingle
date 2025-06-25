@@ -1,6 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-// app 하위 protected 폴더가 있으면 url로 들어간다면 clerk 으로 가도록~
+// app 하위 protected 폴더가 있을때 /protected/abc 등 url로 들어간다면 clerk 인증을 거치도록 하는 역할
 const isProtectedRoute = createRouteMatcher(["/protected(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {

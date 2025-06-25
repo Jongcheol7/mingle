@@ -1,3 +1,34 @@
+Mingle 소셜웹 프로젝트는 Next.js 기반으로 만들었습니다.
+UI 디자인은 tailwind 와 shadcn/ui 를 기본으로 사용하였습니다.
+데이터베이스는 postgresql 을 사용하였고 prisma 어댑터를 통해 접근하였습니다.
+postgresql 은 최종적으로 supabase 에서 관리할거지만 개발 단계에서는 로컬에서 dbever를 통해 관리합니다.
+
+tailwind는 next 패키지 설치시 자동으로 설치되며 shadcn/ui만 따로 설치하면 된다.
+shadcn 에서 주로 Button, Sidebar, Slide 등을 사용하였다.
+
+prisma를 사용하려면 prisma, @prisma/client를 설치해야한다.
+설치후 lib/prisma.ts 파일을 만든후 prisma 변수가 node 전역객체에 정의되어있지 않으면 새로 생성한다.
+prisma를 정상적으로 설치하면 prisma/schema.prisma파일이 생성되며 generater client,
+datasource db설정. 여기서 db는 privider 속성을 postgresql 사용할거고, url은 환경변수에 저장된
+DATABASE URL을 사용할거다. 이는 DBeaver에서 신규생성하고나서 속성에서 주소 볼수 있다.
+해당 schema.prisma 파일에서 테이블들을 model링 하게된다. 서로의 모델과의 관계를 지정해줘야한다.
+User - Post 간 1:N 관계라면 User 안에 posts Post[]로 지정하고
+Post안에 user User @relation(fields:[userId], references:[clerkId])
+모델을 작성하고 npx prisma migrate 실행해서 DBeaver에 반영되었는지 확인.
+
+인증은 Clerk을 사용하고 있다. clerk 관련 패키지를 설치하고 middleware.ts 파일이 생성되는데
+여기서 auth.protect로 특정한 경로를 url로 접근한다면 clerk인증을 거치도록하기 위함이다.
+Clerk을 사용하려면 최상위 RootLayout에 <ClerkProvider>로 감싼다.
+
+페이지 구조
+app 디렉토리 하위에 라우팅 그룹을 사용해 /auth, /home, /post 등 기능별로 그룹화했습니다.
+루트 경로 /는 (home) 그룹 하위에 위치합니다.
+/에 접근 시, Clerk 세션에서 로그인된 사용자 정보(user)를 가져옵니다.
+-> const {userId} = await auth();
+해당 user 정보를 기반으로, 데이터베이스에서 유저 데이터를 직접 조회합니다.
+클라이언트에서는 React Query와 Axios를 사용해 데이터를 요청합니다 (fetch 대신 axios 사용).
+데이터 요청이 성공하면, Zustand를 통해 상태를 관리합니다.
+
 ## Next 프로젝트 설치
 
 ## Clerk 인증 구현
