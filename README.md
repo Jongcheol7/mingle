@@ -88,3 +88,8 @@ npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/modifiers
 embla-carousel-react : 좌우 슬라이드 기능 제공, 모바일 터치도 지원
 @dnd-kit/core : 드래그 드롭 기능. 어디떨어졌는지 계산(onDragEnd, collisionDetection)
 @dnd-kit/sortable : 여러 요소를 드래그로 정렬 할수 있게 해줌.
+
+## alert => sonner 패키지 사용.
+
+RootLayou에 Toaster를 import해주고 컴포넌트를 선언해야 사용가능하다.
+toast.error(""), toast.success("")

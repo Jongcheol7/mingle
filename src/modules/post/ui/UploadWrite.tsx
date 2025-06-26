@@ -104,7 +104,16 @@ export default function UploadWrite() {
 
         {/* 오른쪽 슬라이더 조절 */}
         <div className="w-[40%] p-6 bg-white overflow-y-auto">
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-end mb-4 gap-2">
+            <Button
+              variant="outline"
+              className="text-sm px-3 py-1"
+              onClick={() => {
+                router.push("/post/new/image");
+              }}
+            >
+              이전
+            </Button>
             <Button variant="outline" className="text-sm px-3 py-1">
               저장
             </Button>

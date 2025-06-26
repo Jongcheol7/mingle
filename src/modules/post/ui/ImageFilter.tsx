@@ -9,6 +9,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import ImageSelector from "./ImageSelector";
 import { useUploadImageStore } from "@/lib/store/useUploadImageStore";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type FilterSetting = {
   brightness: number;
@@ -38,7 +39,6 @@ export default function ImageFilter() {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
   const [showImgList, setShowImgList] = useState(false);
-  //const [savedResult, setSavedResult] = useState<File[]>([]);
   const router = useRouter();
 
   const [filterSettings, setFilterSettings] = useState<FilterSetting[]>(
@@ -71,6 +71,10 @@ export default function ImageFilter() {
       return () => URL.revokeObjectURL(url);
     }
   }, [files, currentIdx]);
+
+  useEffect(() => {
+    setFilterSettings(files.map(() => ({ ...defaultSetting })));
+  }, [files]);
 
   // 현재 인덱스에 해당하는 필터 설정을 상태로 복원
   useEffect(() => {
@@ -124,7 +128,7 @@ export default function ImageFilter() {
 
   const getFilteredImageBlobForAll = async (): Promise<File[]> => {
     const result: File[] = [];
-
+    console.log("편집될 파일 수 : ", files.length);
     for (let i = 0; i < files.length; i++) {
       const img = new Image();
       img.crossOrigin = "anonymous";
@@ -133,6 +137,7 @@ export default function ImageFilter() {
       await new Promise((res) => (img.onload = res));
 
       const setting = filterSettings[i];
+      console.log("setting : ", setting);
       const { x, y, width, height } = setting.croppedAreaPixels || {
         x: 0,
         y: 0,
@@ -196,7 +201,7 @@ export default function ImageFilter() {
             <button
               className="absolute right-2 top-[45%] z-20 bg-black/50 hover:bg-black p-2 rounded-full text-white"
               onClick={() => {
-                saveCurrentSettings();
+                //saveCurrentSettings();
                 setCurrentIdx(currentIdx + 1);
               }}
             >
@@ -208,7 +213,7 @@ export default function ImageFilter() {
             <button
               className="absolute left-2 top-[45%] z-20 bg-black/50 hover:bg-black p-2 rounded-full text-white"
               onClick={() => {
-                saveCurrentSettings();
+                //saveCurrentSettings();
                 setCurrentIdx(currentIdx - 1);
               }}
             >
@@ -265,19 +270,30 @@ export default function ImageFilter() {
 
         {/* 오른쪽 슬라이더 조절 */}
         <div className="w-[40%] p-6 bg-white overflow-y-auto">
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-end mb-4 gap-2">
             <Button
               variant="outline"
-              className="text-sm px-3 py-1"
+              className="text-sm px-3 py-1 cursor-pointer"
+              onClick={async () => {
+                saveCurrentSettings();
+                toast.success("필터가 저장되었습니다!");
+              }}
+            >
+              필터 저장
+            </Button>
+            <Button
+              variant={"outline"}
+              className="text-sm px-3 py-1  cursor-pointer"
               onClick={async () => {
                 const savedFiles = await getFilteredImageBlobForAll();
-                console.log("✅ 저장된 모든 이미지:", savedFiles);
-                alert(`총 ${savedFiles.length}개의 이미지가 저장되었습니다!`);
+                toast.success(
+                  `총 ${savedFiles.length}개의 이미지가 저장되었습니다!`
+                );
                 setSaveFiles(savedFiles);
                 router.push("/post/new/write");
               }}
             >
-              필터 저장
+              다음
             </Button>
           </div>
 
