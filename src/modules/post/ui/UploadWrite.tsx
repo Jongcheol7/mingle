@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useUploadImageStore } from "@/lib/store/useUploadImageStore";
 import { useRouter } from "next/navigation";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 export default function UploadWrite() {
   const { saveFiles } = useUploadImageStore();
@@ -96,68 +98,75 @@ export default function UploadWrite() {
               onZoomChange={() => {}} // 이것도 필수 아님, 근데 warning 안뜨게 같이 넣어줘
               // 필터나 편집 기능이 없다면 여긴 그냥 미리보기 용
               style={{
-                mediaStyle: { objectFit: "contain" },
+                mediaStyle: { objectFit: "contain", cursor: "default" },
+                containerStyle: { cursor: "default" }, // 컨테이너에 기본 커서 적용
+                cropAreaStyle: { cursor: "default" }, // 자르기 영역에도
               }}
             />
           </div>
         </div>
 
         {/* 오른쪽 슬라이더 조절 */}
-        <div className="w-[40%] p-6 bg-white overflow-y-auto">
-          <div className="flex justify-end mb-4 gap-2">
-            <Button
-              variant="outline"
-              className="text-sm px-3 py-1"
-              onClick={() => {
-                router.push("/post/new/image");
-              }}
-            >
-              이전
-            </Button>
-            <Button variant="outline" className="text-sm px-3 py-1">
-              저장
-            </Button>
-          </div>
-          <div>
-            <textarea placeholder="내용을 입력하세요." />
-            {/* 태그 */}
-            <div>
-              <label
-                htmlFor="tags"
-                className="block text-sm font-medium text-gray-700 mb-1"
+        <div className="w-[40%] pr-1 bg-white overflow-y-auto">
+          <form
+            onSubmit={
+              async (e) => {
+                e.preventDefault();
+              }
+              // 폼 제출시 처리할 로직
+            }
+          >
+            <div className="flex justify-end mb-4 gap-2">
+              <Button
+                variant="outline"
+                className="text-sm px-3 py-1"
+                onClick={() => {
+                  router.push("/post/new/image");
+                }}
               >
-                태그
-              </label>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm"
-                  >
-                    #{tag}
-                    <button
-                      onClick={() => handleTagDelete(tag)}
-                      className="ml-2 text-green-600 hover:text-red-500 font-bold"
-                    >
-                      x
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <input
-                type="text"
-                placeholder="Enter나 Tab으로 태그 추가"
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                onKeyDown={handleTagsKeyDown}
-              />
-              <input
-                type="hidden"
-                name="tags"
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={tags.join(",")}
-              />
+                이전
+              </Button>
+              <Button
+                type="submit"
+                variant="outline"
+                className="text-sm px-3 py-1"
+              >
+                저장
+              </Button>
             </div>
-          </div>
+
+            <Textarea
+              name="content"
+              placeholder="내용을 입력하세요."
+              className="w-full text-sm resize-none h-[100px] sm:h-[100px] md:h-[150px] lg:h-[200px] xl:h-[250px] border-gray-300 focus:ring-1"
+            />
+            {/* 태그 */}
+
+            <Input
+              type="text"
+              placeholder="Enter나 Tab으로 태그 추가"
+              className="w-full border border-gray-300 rounded px-3 mt-2 py-2 focus:outline-none focus:ring-1"
+              onKeyDown={handleTagsKeyDown}
+            />
+            <div className="flex flex-wrap gap-2 mt-2">
+              {tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="flex items-center bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm hover:bg-red-300 transition-all"
+                  onClick={() => handleTagDelete(tag)}
+                >
+                  # {tag}
+                  {/* <button
+                    onClick={() => handleTagDelete(tag)}
+                    className="ml-2 text-pink-600 hover:text-red-500 font-bold"
+                  >
+                    x
+                  </button> */}
+                </span>
+              ))}
+            </div>
+            <input type="hidden" name="tags" value={tags.join(",")} />
+          </form>
         </div>
       </Card>
     </div>

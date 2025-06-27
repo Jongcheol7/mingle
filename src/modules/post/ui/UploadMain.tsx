@@ -14,44 +14,49 @@ import {
   Droppable, // 드래그한 아이템을 놓을 수 있는 영역
   DropResult, // 드래그 후 결과 객체의 타입
 } from "@hello-pangea/dnd";
+import Image from "next/image";
 
 export default function UploadMain() {
   const router = useRouter();
-  const { setSaveFiles, clearFiles } = useUploadImageStore(); // ✅ Zustand에 파일 저장하는 함수
+  const { setSaveFiles, saveFiles } = useUploadImageStore(); // ✅ Zustand에 파일 저장하는 함수
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
 
+  // 이전버튼으로 돌아올때 사진세팅
   useEffect(() => {
-    clearFiles();
-  }, [clearFiles]);
+    setUploadFiles(saveFiles);
+  }, [saveFiles]);
 
   // ✅ 파일 드롭 or 선택 시 실행될 콜백
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 0) {
-      toast.error("사진이나 동영상만 업로드 가능합니다.");
-      return;
-    }
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length === 0) {
+        toast.error("사진이나 동영상만 업로드 가능합니다.");
+        return;
+      }
 
-    if (
-      acceptedFiles[0].type.startsWith("image") &&
-      uploadFiles.length + acceptedFiles.length > 4
-    ) {
-      toast.error("사진은 최대 4장까지 첨부할수 있습니다.");
-      return;
-    }
+      if (
+        acceptedFiles[0].type.startsWith("image") &&
+        uploadFiles.length + acceptedFiles.length > 4
+      ) {
+        toast.error("사진은 최대 4장까지 첨부할수 있습니다.");
+        return;
+      }
 
-    let imgCnt = 0;
-    let videoCnt = 0;
-    for (let i = 0; i < acceptedFiles.length; i++) {
-      if (acceptedFiles[i].type.startsWith("image")) imgCnt++;
-      if (acceptedFiles[i].type.startsWith("video")) videoCnt++;
-    }
-    if (imgCnt > 0 && videoCnt > 0) {
-      toast.error("사진과 동영상을 한번에 게시할수 없습니다.");
-      return;
-    }
+      let imgCnt = 0;
+      let videoCnt = 0;
+      for (let i = 0; i < acceptedFiles.length; i++) {
+        if (acceptedFiles[i].type.startsWith("image")) imgCnt++;
+        if (acceptedFiles[i].type.startsWith("video")) videoCnt++;
+      }
+      if (imgCnt > 0 && videoCnt > 0) {
+        toast.error("사진과 동영상을 한번에 게시할수 없습니다.");
+        return;
+      }
 
-    setUploadFiles((prev) => [...prev, ...acceptedFiles]);
-  }, []);
+      setUploadFiles((prev) => [...prev, ...acceptedFiles]);
+    },
+    [uploadFiles]
+  );
 
   // ✅ useDropzone 훅으로 drag & drop 처리 설정
   // getRootProps, getInputProps, isDragActive 는 리턴값 onDrop은 callback
@@ -71,9 +76,9 @@ export default function UploadMain() {
   /* 순서 변경 핸들러 */
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return; //드롭 위치가 없으면 무시
-    const reordered = Array.from(uploadFiles);
-    const [removed] = reordered.splice(result.source.index, 1);
-    reordered.splice(result.source.index, 0, removed);
+    const reordered = Array.from(uploadFiles); // 배열 복사
+    const [removed] = reordered.splice(result.source.index, 1); // 기존 위치 제거
+    reordered.splice(result.destination.index, 0, removed); // 새로운 위치에 삽입
     setUploadFiles(reordered);
   };
 
@@ -105,6 +110,7 @@ export default function UploadMain() {
           variant={"custom"}
           className="absolute top-5 right-5"
           onClick={handleNext}
+          disabled={uploadFiles.length === 0}
         >
           다음
         </Button>
@@ -112,7 +118,7 @@ export default function UploadMain() {
           <Droppable droppableId="image-list" direction="horizontal">
             {(provided) => (
               <div
-                className="absolute top-32 flex"
+                className="flex"
                 ref={provided.innerRef}
                 {...provided.droppableProps} // DnD가 드래그 허용되도록 필요한 속성
               >
@@ -122,18 +128,24 @@ export default function UploadMain() {
                     draggableId={`${file.name}-${file.lastModified}`}
                     index={index}
                   >
-                    {(provided) => (
+                    {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
-                        <div className="relative w-[200px] h-[200px] px-1 ">
-                          <img
-                            src={URL.createObjectURL(file)}
-                            alt={file.name}
-                            className="w-full h-full cursor-default rounded-xl"
-                          />
+                        <div className="relative px-1 ">
+                          {snapshot.isDragging ? (
+                            <div className="w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40 h-24 sm:h-28 md:h-32 lg:h-36 xl:h-40 bg-gray-300 animate-pulse rounded-xl" />
+                          ) : (
+                            <Image
+                              src={URL.createObjectURL(file)}
+                              alt={file.name}
+                              width={24}
+                              height={24}
+                              className="w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40 h-24 sm:h-28 md:h-32 lg:h-36 xl:h-40 object-cover cursor-default rounded-xl"
+                            />
+                          )}
                           <button
                             className="absolute top-0 right-1 bg-black/40 rounded-tr-xl text-white text-center  text-[10px] px-2 py-2 hover:bg-red-500 transition"
                             onClick={() => handleDelete(file)}
@@ -149,7 +161,7 @@ export default function UploadMain() {
             )}
           </Droppable>
         </DragDropContext>
-        <div className="absolute bottom-40 flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-3">
           <input {...getInputProps()} className="hidden" />
 
           <UploadIcon className="w-12 h-12 text-muted-foreground" />
