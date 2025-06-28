@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id        Int      @id    @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   clerkId   String   @unique
   email     String   @unique
   name      String
@@ -23,50 +23,69 @@ model User {
 }
 
 model Post {
-  id        Int      @id   @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   userId    String
-  title     String 
-  content   String 
+  title     String
+  content   String
   createdAt DateTime @default(now())
 
-  author    User  @relation(fields:[userId], references:[clerkId])
-  medias    PostMedia[]
-  likes     Like[]
-  comments  Comment[]
+  author   User        @relation(fields: [userId], references: [clerkId])
+  medias   PostMedia[]
+  likes    Like[]
+  comments Comment[]
+  postTags PostTag[]
 }
 
 model PostMedia {
-  id        Int       @id   @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   postId    Int
   type      MediaType
   url       String
   order     Int
   createdAt DateTime  @default(now())
 
-  post  Post  @relation(fields:[postId], references:[id])
+  post Post @relation(fields: [postId], references: [id])
+}
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  postTags PostTag[]
+}
+
+model PostTag {
+  postId Int
+  tagId  Int
+
+  post Post @relation(fields: [postId], references: [id])
+  tag  Tag  @relation(fields: [tagId], references: [id])
+
+  @@id([postId, tagId])
 }
 
 model Like {
-  id        Int       @id   @default(autoincrement())
-  userId    String 
-  postId    Int 
-  createdAt DateTime  @default(now())
+  id        Int      @id @default(autoincrement())
+  userId    String
+  postId    Int
+  createdAt DateTime @default(now())
 
-  author  User  @relation(fields:[userId], references:[clerkId])
-  post    Post  @relation(fields:[postId], references:[id])
+  author User @relation(fields: [userId], references: [clerkId])
+  post   Post @relation(fields: [postId], references: [id])
 
   @@unique([userId, postId])
 }
 
 model Comment {
-  id        Int        @id    @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   userId    String
   postId    Int
   content   String
-  createdAt DateTime   @default(now())
+  createdAt DateTime @default(now())
 
-  author  User  @relation(fields:[userId], references:[clerkId])
-  post    Post  @relation(fields:[postId], references:[id])
+  author User @relation(fields: [userId], references: [clerkId])
+  post   Post @relation(fields: [postId], references: [id])
 }
 
 enum MediaType {

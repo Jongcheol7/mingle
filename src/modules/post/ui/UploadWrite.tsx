@@ -9,28 +9,36 @@ import { useUploadImageStore } from "@/lib/store/useUploadImageStore";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { usePostMutation } from "@/hooks/usePostMutation";
+
+type FormData = {
+  title: string;
+  content: string;
+  tags: string[];
+};
 
 export default function UploadWrite() {
-  const { saveFiles } = useUploadImageStore();
-  const [currentIdx, setCurrentIdx] = useState(0);
-  const [imageUrl, setImageUrl] = useState("");
-  const router = useRouter();
-  const [tags, setTags] = useState([]);
+  const router = useRouter(); //라우터
+  const { saveFiles } = useUploadImageStore(); //zustand 사용
+  const [currentIdx, setCurrentIdx] = useState(0); //현재 보고있는 사진의 index
+  //const [tags, setTags] = useState([]);
+  //react-use-form 사용(컴포넌트전용)
+  const { register, handleSubmit, setValue, watch, getValues } =
+    useForm<FormData>({
+      defaultValues: { title: "", content: "", tags: [] },
+    });
+  watch("tags"); //watch를 통해 실시간 랜더링 유도
 
+  const { mutate: saveMutate, isPending: isSaving } = usePostMutation();
+
+  //zustand에 사진이 없으면 upload화면으로 이동
   useEffect(() => {
     if (saveFiles.length === 0) {
       router.replace("/post/new");
     }
   }, [saveFiles, router]);
-
-  // 현재 이미지 파일로부터 blob URL 생성 (변경될 때마다 실행)
-  useEffect(() => {
-    if (saveFiles.length > 0) {
-      const url = URL.createObjectURL(saveFiles[currentIdx]);
-      setImageUrl(url);
-      return () => URL.revokeObjectURL(url);
-    }
-  }, [saveFiles, currentIdx]);
 
   // 태그 추가 이벤트
   const handleTagsKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -38,20 +46,31 @@ export default function UploadWrite() {
     const keys = ["Enter", "Tab"];
     if (keys.includes(e.key)) {
       e.preventDefault();
-      if (tags.length >= 10) {
-        return alert("태그는 최대 10개까지 추가 가능합니다.");
+      const rawValue = e.currentTarget.value.trim().toLowerCase();
+      const currentTags = getValues("tags");
+      if (currentTags.length >= 10) {
+        toast.error("태그는 최대 10개까지 추가 가능합니다.");
+        return;
       }
-      const value = e.currentTarget.value.trim().toLowerCase();
-      if (value && !tags.includes(value)) {
-        setTags((prev) => [...prev, value]);
-        e.target.value = "";
+
+      if (rawValue && !currentTags.includes(rawValue)) {
+        const newTags = [...currentTags, rawValue];
+        setValue("tags", newTags);
+        e.currentTarget.value = "";
       }
     }
   };
 
   // 태그 삭제 이벤트
-  const handleTagDelete = (deleteTag) => {
-    setTags((prev) => prev.filter((tag) => tag !== deleteTag));
+  const handleTagDelete = (deleteTag: string) => {
+    const currentTags = getValues("tags");
+    const newTags = currentTags.filter((tag) => tag !== deleteTag);
+    setValue("tags", newTags);
+  };
+
+  // Form 제출 이벤트
+  const onSubmit = (data: FormData) => {
+    saveMutate(data);
   };
 
   return (
@@ -90,7 +109,7 @@ export default function UploadWrite() {
           {/* 필터 적용은 이미지에만 */}
           <div className="relative w-full h-full">
             <Cropper
-              image={imageUrl}
+              image={URL.createObjectURL(saveFiles[currentIdx])}
               crop={{ x: 0, y: 0 }}
               zoom={1}
               aspect={1}
@@ -108,14 +127,7 @@ export default function UploadWrite() {
 
         {/* 오른쪽 슬라이더 조절 */}
         <div className="w-[40%] pr-1 bg-white overflow-y-auto">
-          <form
-            onSubmit={
-              async (e) => {
-                e.preventDefault();
-              }
-              // 폼 제출시 처리할 로직
-            }
-          >
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex justify-end mb-4 gap-2">
               <Button
                 variant="outline"
@@ -130,15 +142,23 @@ export default function UploadWrite() {
                 type="submit"
                 variant="outline"
                 className="text-sm px-3 py-1"
+                disabled={isSaving}
               >
-                저장
+                {isSaving ? "저장중" : "저장"}
               </Button>
             </div>
 
+            <Input
+              {...register("title")}
+              type="text"
+              placeholder="제목을 입력하세요"
+              className="w-full border border-gray-300 rounded px-3 mt-2 py-2 focus:outline-none focus:ring-1"
+            />
+
             <Textarea
-              name="content"
+              {...register("content")}
               placeholder="내용을 입력하세요."
-              className="w-full text-sm resize-none h-[100px] sm:h-[100px] md:h-[150px] lg:h-[200px] xl:h-[250px] border-gray-300 focus:ring-1"
+              className="w-full mt-2 text-sm resize-none h-[100px] sm:h-[100px] md:h-[150px] lg:h-[200px] xl:h-[250px] border-gray-300 focus:ring-1"
             />
             {/* 태그 */}
 
@@ -149,23 +169,16 @@ export default function UploadWrite() {
               onKeyDown={handleTagsKeyDown}
             />
             <div className="flex flex-wrap gap-2 mt-2">
-              {tags.map((tag) => (
+              {getValues("tags").map((tag) => (
                 <span
                   key={tag}
                   className="flex items-center bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm hover:bg-red-300 transition-all"
                   onClick={() => handleTagDelete(tag)}
                 >
                   # {tag}
-                  {/* <button
-                    onClick={() => handleTagDelete(tag)}
-                    className="ml-2 text-pink-600 hover:text-red-500 font-bold"
-                  >
-                    x
-                  </button> */}
                 </span>
               ))}
             </div>
-            <input type="hidden" name="tags" value={tags.join(",")} />
           </form>
         </div>
       </Card>

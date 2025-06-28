@@ -93,3 +93,7 @@ embla-carousel-react : 좌우 슬라이드 기능 제공, 모바일 터치도 �
 
 RootLayou에 Toaster를 import해주고 컴포넌트를 선언해야 사용가능하다.
 toast.error(""), toast.success("")
+
+## form을 useForm 을 활용해서 사용.
+
+npm i react-hook-form 설치
