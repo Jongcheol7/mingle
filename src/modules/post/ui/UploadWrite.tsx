@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { usePostMutation } from "@/hooks/usePostMutation";
+import axios from "axios";
+import imageCompression from "browser-image-compression";
 
 type FormData = {
   title: string;
@@ -69,8 +71,45 @@ export default function UploadWrite() {
   };
 
   // Form 제출 이벤트
-  const onSubmit = (data: FormData) => {
-    saveMutate(data);
+  const onSubmit = async (data: FormData) => {
+    try {
+      //1.이미지들을 순차적으로 S3에 업로드하고, S3 URL을 배열로 수집
+      const imageUrls: string[] = [];
+      for (const file of saveFiles) {
+        const compressedFile = await imageCompression(file, {
+          maxSizeMB: 0.7,
+          maxWidthOrHeight: 1024,
+          useWebWorker: true,
+        });
+        const presignedRes = await axios.post("/api/post/upload/image", {
+          fileType: compressedFile.type,
+        });
+        if (presignedRes.data.error) {
+          throw new Error("Presined URL 생성실패");
+        }
+        const { uploadUrl, fileUrl } = presignedRes.data;
+
+        //2. presigned URL로 S3에 실제 업로드
+        await axios.put(uploadUrl, compressedFile, {
+          headers: {
+            "Content-Type": compressedFile.type,
+          },
+        });
+
+        //3. 업로드 성공시 배열에 url 저장
+        imageUrls.push(fileUrl);
+      }
+
+      //4. 기존 form데이터에 imageUrls도 포함.
+      const finalData = {
+        ...data,
+        imageUrls,
+      };
+      saveMutate(finalData);
+    } catch (err) {
+      console.log("이미지 업로드 중 오류 발생:", err);
+      toast.error("이미지 업로드 중 오류 발생");
+    }
   };
 
   return (

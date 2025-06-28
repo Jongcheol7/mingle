@@ -3,10 +3,11 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  const { title, content, tags } = (await request.json()) as {
+  const { title, content, tags, imageUrls } = (await request.json()) as {
     title: string;
     content: string;
     tags: string[];
+    imageUrls: string[];
   };
 
   if (!title || title.trim().length === 0) {
@@ -16,6 +17,10 @@ export async function POST(request: Request) {
   if (!content || content.trim().length === 0) {
     console.error("글 내용이 없습니다.");
     return NextResponse.json({ error: "글 내용이 없습니다." }, { status: 400 });
+  }
+  if (!imageUrls || imageUrls.length === 0) {
+    console.error("이미지가 없습니다.");
+    return NextResponse.json({ error: "이미지가 없습니다." }, { status: 400 });
   }
 
   const { userId } = await auth();
@@ -71,7 +76,20 @@ export async function POST(request: Request) {
       skipDuplicates: true,
     });
 
-    return NextResponse.json({ message: "POST 저장 성공" }, { status: 200 });
+    // 이미지 URL 저장
+    await prisma.postMedia.createMany({
+      data: imageUrls.map((url, index) => ({
+        url: url,
+        postId: post.id,
+        type: "IMAGE",
+        order: index,
+      })),
+    });
+
+    return NextResponse.json(
+      { message: "POST 저장 성공", postId: post.id },
+      { status: 200 }
+    );
   } catch (err) {
     console.error("POST 저장에 실패했습니다.", err);
     return NextResponse.json(

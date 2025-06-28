@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -10,7 +10,7 @@ type Post = {
 
 export function usePostMutation() {
   const router = useRouter();
-  const queryClient = useQueryClient();
+  //const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: Post) => {

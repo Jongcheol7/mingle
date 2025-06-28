@@ -97,3 +97,15 @@ toast.error(""), toast.success("")
 ## form을 useForm 을 활용해서 사용.
 
 npm i react-hook-form 설치
+
+## 이미지 저장은 aws의 s3를 통해서 해보자.
+
+aws 프리티어 가입후 s3 서비스에서 버킷을 생성한다. 생성후 권한과 정책을 변경후
+발급받은 AWS_ACCESS_KEY_ID 와 AWS_SECRET_ACCESS_KEY 를 환경변수에 저장한후
+/app/api/post/upload/image/route.ts에서 소스구현.
+필요패키지는 아래와 같다.
+npm install @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
+순서는 사진+글(form) 저장시 s3에서 presignedUrl을 받아온다.
+배열에 담아두고 form안에 배열을 추가적으로 넣은후 api 라우트 호출.
+요금절약을 위해 사진파일을 압축해야겠다..
+npm install browser-image-compression 을 설치해서 적용해보자.
