@@ -109,3 +109,26 @@ npm install @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
 배열에 담아두고 form안에 배열을 추가적으로 넣은후 api 라우트 호출.
 요금절약을 위해 사진파일을 압축해야겠다..
 npm install browser-image-compression 을 설치해서 적용해보자.
+추가적으로 클라우드는 조회를 하는데도 과금이 발생한다고 한다.
+포스트가 많을때 스크롤을 내릴때마다 s3에서 이미지를 받는다면 과금문제가 심각할수 있다..
+그래서 aws cloudfront 서비스를 사용하도록 한다. 해당 서비스에 들어가서 배포를 하고나면
+알아서 s3 정책이 수정이 된다. 배포완료되면 받는 CLOUDFRONT_DOMAIN_NAME 는 또 환경변수에 담아두자.
+
+앞으로 흘러가는 사진 프로세스 방향.
+s3에 presignedUrl요청 요청후 uploadUrl과 fileUrl을 따로 관리한다.
+여기서 핵심은 fileUrl에는 CLOUDFRONT_DOMAIN_NAME를 뭍히면 된다.
+즉 사진은 uploadUrl에 한번만 저장하면되는거고 db에는 fileUrl을 저장하게 된다.
+그리고 앞으로 사진에 접근할때는 fileUrl을 사용해서 cloudfront에 접근하면
+cloudfront는 s3에 접근해서 파일을 보여주게 되는 꼴이다.
+
+## 무한스크롤
+
+postlist 조회시 무한스크롤로 구현하려고 한다. 대부분 소셜미디어에서도 그렇게 하고있는거 같다.
+방식에는 skip/limit 방식과 cursor 방식이 있는데 큰규모 프로젝트에는 cursor 가 좋은게
+중간에 post가 삭제되더라도 마지막 데이터 ID를 기준으로 다음 데이터를 불러오기 때문에 누락이 없다.
+skip/limit은 처음 조회할때 스냅샷을 한거같은 느낌이랄까. 그래서 10개를 조회하는데 중간에 삭제되면
+10개를 조회하지 못한다.
+화면 컴포넌트에서 리엑트쿼리(/hooks/usePostLists.ts)를 호출후 useInfiniteQuery 의 queryFn 에서
+/app/api/post/list/route.ts 호출하도록 한다.
+조회쿼리에는 여러 테이블을 join하게되는데 일대다 관계를 조인하면 1개의 포스트지만 여러 row를 리턴하는데
+prisma의 include 기능으로 여러개의 출력을 하나의 컬럼에 배열로 반환해준다. 이래서 prisma를 쓰는건가 싶다.

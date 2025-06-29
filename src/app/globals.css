@@ -120,3 +120,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* globals.css or Tailwind base */
+.swiper-custom-nav .swiper-button-prev,
+.swiper-custom-nav .swiper-button-next {
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+  color: rgb(88, 88, 88);
+}

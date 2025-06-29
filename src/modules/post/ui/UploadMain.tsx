@@ -104,7 +104,7 @@ export default function UploadMain() {
     <div>
       <Card
         {...getRootProps()}
-        className="relative ml-5 mr-10 px-1 mt-8 h-[calc(100vh-70px)] flex flex-col items-center justify-center shadow-xl gap-4"
+        className="relative ml-5 mr-4 px-1 mt-8 h-[calc(100vh-70px)] flex flex-col items-center justify-center shadow-xl gap-4"
       >
         <Button
           variant={"custom"}
