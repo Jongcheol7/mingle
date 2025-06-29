@@ -6,7 +6,7 @@ import { UploadIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useRouter } from "next/navigation";
-import { useUploadImageStore } from "@/lib/store/useUploadImageStore";
+import { useUploadStore } from "@/lib/store/useUploadStore";
 import { toast } from "sonner";
 import {
   DragDropContext, // 드래그 전체를 감싸는 컨텍스트
@@ -18,7 +18,7 @@ import Image from "next/image";
 
 export default function UploadMain() {
   const router = useRouter();
-  const { setSaveFiles, saveFiles } = useUploadImageStore(); // ✅ Zustand에 파일 저장하는 함수
+  const { setSaveFiles, saveFiles } = useUploadStore(); // ✅ Zustand에 파일 저장하는 함수
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
 
   // 이전버튼으로 돌아올때 사진세팅
@@ -34,6 +34,21 @@ export default function UploadMain() {
         return;
       }
 
+      let imgCnt = 0;
+      let videoCnt = 0;
+      for (let i = 0; i < acceptedFiles.length; i++) {
+        if (acceptedFiles[i].type.startsWith("image")) imgCnt++;
+        if (acceptedFiles[i].type.startsWith("video")) videoCnt++;
+      }
+      for (let j = 0; j < uploadFiles.length; j++) {
+        if (uploadFiles[j].type.startsWith("image")) imgCnt++;
+        if (uploadFiles[j].type.startsWith("video")) videoCnt++;
+      }
+      if (imgCnt > 0 && videoCnt > 0) {
+        toast.error("사진과 동영상을 한번에 게시할수 없습니다.");
+        return;
+      }
+
       if (
         acceptedFiles[0].type.startsWith("image") &&
         uploadFiles.length + acceptedFiles.length > 4
@@ -42,14 +57,11 @@ export default function UploadMain() {
         return;
       }
 
-      let imgCnt = 0;
-      let videoCnt = 0;
-      for (let i = 0; i < acceptedFiles.length; i++) {
-        if (acceptedFiles[i].type.startsWith("image")) imgCnt++;
-        if (acceptedFiles[i].type.startsWith("video")) videoCnt++;
-      }
-      if (imgCnt > 0 && videoCnt > 0) {
-        toast.error("사진과 동영상을 한번에 게시할수 없습니다.");
+      if (
+        acceptedFiles[0].type.startsWith("video") &&
+        uploadFiles.length + acceptedFiles.length > 1
+      ) {
+        toast.error("동영상은 한개만 첨부할수 있습니다.");
         return;
       }
 
@@ -98,6 +110,11 @@ export default function UploadMain() {
       setSaveFiles(uploadFiles);
       router.push("/post/new/image");
     }
+    if (uploadFiles[0].type.startsWith("video")) {
+      // ✅ Zustand에 파일 저장
+      setSaveFiles(uploadFiles);
+      router.push("/post/new/video");
+    }
   };
 
   return (
@@ -137,13 +154,21 @@ export default function UploadMain() {
                         <div className="relative px-1 ">
                           {snapshot.isDragging ? (
                             <div className="w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40 h-24 sm:h-28 md:h-32 lg:h-36 xl:h-40 bg-gray-300 animate-pulse rounded-xl" />
-                          ) : (
+                          ) : file.type.startsWith("image") ? (
                             <Image
                               src={URL.createObjectURL(file)}
                               alt={file.name}
                               width={24}
                               height={24}
                               className="w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40 h-24 sm:h-28 md:h-32 lg:h-36 xl:h-40 object-cover cursor-default rounded-xl"
+                            />
+                          ) : (
+                            <video
+                              src={URL.createObjectURL(file)}
+                              className="w-52 h-52 object-contain rounded-xl"
+                              autoPlay
+                              loop
+                              playsInline
                             />
                           )}
                           <button

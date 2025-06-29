@@ -132,3 +132,19 @@ skip/limit은 처음 조회할때 스냅샷을 한거같은 느낌이랄까. 그
 /app/api/post/list/route.ts 호출하도록 한다.
 조회쿼리에는 여러 테이블을 join하게되는데 일대다 관계를 조인하면 1개의 포스트지만 여러 row를 리턴하는데
 prisma의 include 기능으로 여러개의 출력을 하나의 컬럼에 배열로 반환해준다. 이래서 prisma를 쓰는건가 싶다.
+
+## 슬라이드 기능을 구현해보자
+
+npm install swiper 패키지 설치.
+src\modules\home\ui\PostLists.tsx 소스에서 Swiper, SwiperSlide 컴포넌트를 통해 슬라이더를 구현한다.
+참고로 <, > 화살표가 자동으로 생성될텐데 크기를 조정하려고 globalcss 를 수정하였다.
+
+## 비디오 기능 Mux
+
+Mux는 비디오 전용 클라우드겸 플레이어 기능도 제공해준다.
+npm install @mux/mux-node 설치를 하고
+플레이어를 위해 npm install @mux/mux-player-react 도 설치해준다.
+그리고 mux 홈페이지 가입후 Access Tokens을 발급받고 환경변수에 저장해둔다.
+aws s3와 마찬가지로 업로드전 presigned url 을 발급받고 나중에 업로드 할때
+해당 url을 사용하게된다.
+src\app\api\post\upload\video\route.ts 참고

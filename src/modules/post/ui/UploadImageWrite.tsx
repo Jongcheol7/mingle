@@ -5,7 +5,7 @@ import Cropper from "react-easy-crop";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useUploadImageStore } from "@/lib/store/useUploadImageStore";
+import { useUploadStore } from "@/lib/store/useUploadStore";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -21,13 +21,13 @@ type FormData = {
   tags: string[];
 };
 
-export default function UploadWrite() {
+export default function UploadImageWrite() {
   const router = useRouter(); //라우터
-  const { saveFiles } = useUploadImageStore(); //zustand 사용
+  const { saveFiles, clearFiles } = useUploadStore(); //zustand 사용
   const [currentIdx, setCurrentIdx] = useState(0); //현재 보고있는 사진의 index
   //const [tags, setTags] = useState([]);
   //react-use-form 사용(컴포넌트전용)
-  const { register, handleSubmit, setValue, watch, getValues } =
+  const { register, handleSubmit, setValue, watch, getValues, reset } =
     useForm<FormData>({
       defaultValues: { title: "", content: "", tags: [] },
     });
@@ -105,7 +105,12 @@ export default function UploadWrite() {
         ...data,
         imageUrls,
       };
-      saveMutate(finalData);
+      saveMutate(finalData, {
+        onSuccess: () => {
+          clearFiles();
+          reset();
+        },
+      });
     } catch (err) {
       console.log("이미지 업로드 중 오류 발생:", err);
       toast.error("이미지 업로드 중 오류 발생");

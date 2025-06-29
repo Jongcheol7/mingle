@@ -6,7 +6,7 @@ type UploadStore = {
   clearFiles: () => void;
 };
 
-export const useUploadImageStore = create<UploadStore>((set) => ({
+export const useUploadStore = create<UploadStore>((set) => ({
   saveFiles: [],
   setSaveFiles: (files) => set({ saveFiles: files }),
   clearFiles: () => set({ saveFiles: [] }),

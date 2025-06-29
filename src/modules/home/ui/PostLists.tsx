@@ -38,7 +38,7 @@ const formatDate = (date: string) => {
 };
 
 export default function PostLists() {
-  const { data, error, isSuccess, isError, refetch } = usePostLists();
+  const { data, error, isError } = usePostLists(); //refetch, isSuccess 생략
   if (isError) {
     toast.error("Post 목록 조회 실패 : " + error);
   }
@@ -79,8 +79,8 @@ export default function PostLists() {
                 post.medias[0]?.type === "IMAGE" &&
                 (post.medias.length === 1 ? (
                   <Image
-                    src={post.medias[0].url}
-                    //src={"logo.svg"}
+                    //src={post.medias[0].url}
+                    src={"logo.svg"}
                     alt="Post image"
                     width={400}
                     height={400}
@@ -97,8 +97,8 @@ export default function PostLists() {
                     {post.medias.map((media) => (
                       <SwiperSlide key={media.id}>
                         <Image
-                          src={media.url}
-                          //src={"logo.svg"}
+                          //src={media.url}
+                          src={"logo.svg"}
                           alt="Post image"
                           width={400}
                           height={400}
