@@ -148,3 +148,7 @@ npm install @mux/mux-node 설치를 하고
 aws s3와 마찬가지로 업로드전 presigned url 을 발급받고 나중에 업로드 할때
 해당 url을 사용하게된다.
 src\app\api\post\upload\video\route.ts 참고
+
+동영상 자르기를 위해 ffmpeg.wasm 패키지를 다운받는다. 이 라이브러리는 인기가 많고
+사용 예시도 많아서 채택해보도록 하겠다.
+npm install @ffmpeg/ffmpeg @ffmpeg/util
