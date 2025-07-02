@@ -108,12 +108,12 @@ export default function UploadMain() {
     if (uploadFiles[0].type.startsWith("image")) {
       // ✅ Zustand에 파일 저장
       setSaveFiles(uploadFiles);
-      router.push("/post/new/image");
+      router.push("/post/new/image/filter");
     }
     if (uploadFiles[0].type.startsWith("video")) {
       // ✅ Zustand에 파일 저장
       setSaveFiles(uploadFiles);
-      router.push("/post/new/video");
+      router.push("/post/new/video/filter");
     }
   };
 

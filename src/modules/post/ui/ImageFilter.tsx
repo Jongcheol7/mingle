@@ -6,9 +6,9 @@ import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useUploadImageStore } from "@/lib/store/useUploadImageStore";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useUploadStore } from "@/lib/store/useUploadStore";
 
 type FilterSetting = {
   brightness: number;
@@ -24,7 +24,7 @@ type FilterSetting = {
 export default function ImageFilter() {
   const router = useRouter();
 
-  const { saveFiles, setSaveFiles } = useUploadImageStore(); // Zustand에서 불러오기
+  const { saveFiles, setSaveFiles } = useUploadStore(); // Zustand에서 불러오기
   const [currentIdx, setCurrentIdx] = useState(0); // 현재 보고있는 사진 index
   const [filterSettings, setFilterSettings] = useState<FilterSetting[]>(
     saveFiles.map(() => ({

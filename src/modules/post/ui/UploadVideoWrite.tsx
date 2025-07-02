@@ -116,7 +116,7 @@ export default function UploadVideoWrite() {
     <div className="flex h-screen">
       <Card className="flex-1 relative ml-5 mr-8 mt-8 px-1 h-[calc(100vh-70px)] flex flex-row shadow-xl">
         {/* 왼쪽 : 비디오 */}
-        <div className="relative w-[60%] bg-black overflow-hidden">
+        <div className="relative w-[60%] bg-black overflow-hidden flex items-center justify-center">
           {previewUrl ? (
             <video
               src={previewUrl}
@@ -136,7 +136,7 @@ export default function UploadVideoWrite() {
                 variant="outline"
                 className="text-sm px-3 py-1"
                 onClick={() => {
-                  router.push("/post/new/image");
+                  router.push("/post/new/video/filter");
                 }}
               >
                 이전
