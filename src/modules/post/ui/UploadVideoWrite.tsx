@@ -20,10 +20,10 @@ type FormData = {
 
 export default function UploadVideoWrite() {
   const router = useRouter(); //라우터
-  const { saveFiles, clearFiles } = useUploadStore(); //zustand 사용
+  const { saveFiles } = useUploadStore(); //zustand 사용
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   //react-use-form 사용(컴포넌트전용)
-  const { register, handleSubmit, setValue, watch, getValues, reset } =
+  const { register, handleSubmit, setValue, watch, getValues } =
     useForm<FormData>({
       defaultValues: { title: "", content: "", tags: [] },
     });
@@ -35,7 +35,7 @@ export default function UploadVideoWrite() {
   useEffect(() => {
     if (!saveFiles || saveFiles.length === 0) {
       router.replace("/post/new");
-    } else {
+    } else if (saveFiles && saveFiles.length > 0) {
       const preview = URL.createObjectURL(saveFiles[0]);
       setPreviewUrl(preview);
       //메모리 누수 방지용 cleanup
@@ -116,13 +116,7 @@ export default function UploadVideoWrite() {
         assetId,
         playbackId,
       };
-      saveMutate(finalData, {
-        onSuccess: () => {
-          clearFiles();
-          reset();
-          router.push("/");
-        },
-      });
+      saveMutate(finalData);
     } catch (err) {
       console.log("동영상 업로드 중 오류 발생:", err);
       toast.error("동영상 업로드 중 오류 발생");

@@ -23,11 +23,11 @@ type FormData = {
 
 export default function UploadImageWrite() {
   const router = useRouter(); //라우터
-  const { saveFiles, clearFiles } = useUploadStore(); //zustand 사용
+  const { saveFiles } = useUploadStore(); //zustand 사용
   const [currentIdx, setCurrentIdx] = useState(0); //현재 보고있는 사진의 index
   //const [tags, setTags] = useState([]);
   //react-use-form 사용(컴포넌트전용)
-  const { register, handleSubmit, setValue, watch, getValues, reset } =
+  const { register, handleSubmit, setValue, watch, getValues } =
     useForm<FormData>({
       defaultValues: { title: "", content: "", tags: [] },
     });
@@ -105,13 +105,7 @@ export default function UploadImageWrite() {
         ...data,
         imageUrls,
       };
-      saveMutate(finalData, {
-        onSuccess: () => {
-          clearFiles();
-          reset();
-          router.push("/");
-        },
-      });
+      saveMutate(finalData);
     } catch (err) {
       console.log("이미지 업로드 중 오류 발생:", err);
       toast.error("이미지 업로드 중 오류 발생");
@@ -153,20 +147,22 @@ export default function UploadImageWrite() {
 
           {/* 필터 적용은 이미지에만 */}
           <div className="relative w-full h-full">
-            <Cropper
-              image={URL.createObjectURL(saveFiles[currentIdx])}
-              crop={{ x: 0, y: 0 }}
-              zoom={1}
-              aspect={1}
-              onCropChange={() => {}} // 임시로라도 넣어줘야 함
-              onZoomChange={() => {}} // 이것도 필수 아님, 근데 warning 안뜨게 같이 넣어줘
-              // 필터나 편집 기능이 없다면 여긴 그냥 미리보기 용
-              style={{
-                mediaStyle: { objectFit: "contain", cursor: "default" },
-                containerStyle: { cursor: "default" }, // 컨테이너에 기본 커서 적용
-                cropAreaStyle: { cursor: "default" }, // 자르기 영역에도
-              }}
-            />
+            {saveFiles && saveFiles.length > 0 && saveFiles[currentIdx] && (
+              <Cropper
+                image={URL.createObjectURL(saveFiles[currentIdx])}
+                crop={{ x: 0, y: 0 }}
+                zoom={1}
+                aspect={1}
+                onCropChange={() => {}} // 임시로라도 넣어줘야 함
+                onZoomChange={() => {}} // 이것도 필수 아님, 근데 warning 안뜨게 같이 넣어줘
+                // 필터나 편집 기능이 없다면 여긴 그냥 미리보기 용
+                style={{
+                  mediaStyle: { objectFit: "contain", cursor: "default" },
+                  containerStyle: { cursor: "default" }, // 컨테이너에 기본 커서 적용
+                  cropAreaStyle: { cursor: "default" }, // 자르기 영역에도
+                }}
+              />
+            )}
           </div>
         </div>
 

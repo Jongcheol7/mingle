@@ -9,6 +9,8 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import MuxPlayer from "@mux/mux-player-react";
+import { useUploadStore } from "@/lib/store/useUploadStore";
+import { useEffect } from "react";
 
 type Post = {
   id: number;
@@ -40,6 +42,12 @@ const formatDate = (date: string) => {
 
 export default function PostLists() {
   const { data, error, isError } = usePostLists(); //refetch, isSuccess 생략
+  const { clearFiles } = useUploadStore();
+
+  useEffect(() => {
+    clearFiles();
+  }, [clearFiles]);
+
   if (isError) {
     toast.error("Post 목록 조회 실패 : " + error);
   }
@@ -98,8 +106,8 @@ export default function PostLists() {
                     {post.medias.map((media) => (
                       <SwiperSlide key={media.id}>
                         <Image
-                          //src={media.url}
-                          src={"logo.svg"}
+                          src={media.url}
+                          //src={"logo.svg"}
                           alt="Post image"
                           width={400}
                           height={400}
