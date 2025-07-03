@@ -98,6 +98,8 @@ export default function VideoFilter() {
 
     await waitUntil(range.end);
     recorder.stop();
+
+    router.push("/post/new/video/write");
   };
 
   return (
@@ -130,7 +132,6 @@ export default function VideoFilter() {
               className="text-sm px-3 py-1"
               onClick={() => {
                 handleTrimVideo();
-                router.push("/post/new/video/write");
               }}
             >
               다음

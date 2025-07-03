@@ -87,6 +87,8 @@ export default function UploadVideoWrite() {
 
       const { url, id, error } = presignedRes.data;
       if (error || !url || !id) throw new Error("Presigned URL 생성 실패");
+      console.log("비디오 url : ", url);
+      console.log("비디오 id : ", id);
 
       //2. presigned URL로 Mux 에 실제 업로드
       await axios.put(url, saveFiles[0], {
@@ -95,15 +97,30 @@ export default function UploadVideoWrite() {
         },
       });
 
+      //3. mux에서 asset_id 와 playback_id 받아오기
+      let assetId = null;
+      let playbackId = null;
+      for (let tries = 0; tries < 10; tries++) {
+        const res = await axios.get(`/api/post/upload/video?uploadId=${id}`);
+        if (res.data.asset_id && res.data.playback_id) {
+          assetId = res.data.asset_id;
+          playbackId = res.data.playback_id;
+          break;
+        }
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+
       //4. 기존 form데이터에 mux url 도 포함.
       const finalData = {
         ...data,
-        muxUploadId: id,
+        assetId,
+        playbackId,
       };
       saveMutate(finalData, {
         onSuccess: () => {
           clearFiles();
           reset();
+          router.push("/");
         },
       });
     } catch (err) {
@@ -135,7 +152,8 @@ export default function UploadVideoWrite() {
               <Button
                 variant="outline"
                 className="text-sm px-3 py-1"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
                   router.push("/post/new/video/filter");
                 }}
               >

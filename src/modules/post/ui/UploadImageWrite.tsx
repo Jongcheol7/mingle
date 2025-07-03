@@ -109,6 +109,7 @@ export default function UploadImageWrite() {
         onSuccess: () => {
           clearFiles();
           reset();
+          router.push("/");
         },
       });
     } catch (err) {

@@ -27,18 +27,18 @@ export default function ImageFilter() {
   const { saveFiles, setSaveFiles } = useUploadStore(); // Zustand에서 불러오기
   const [currentIdx, setCurrentIdx] = useState(0); // 현재 보고있는 사진 index
   const [filterSettings, setFilterSettings] = useState<FilterSetting[]>(
+    // 파일 수 만큼 초기값 생성
+    // 아래처럼 하는 이뉴는 map이 리턴값을 반환해주고 그걸 세팅해줄수 있으니깐.
     saveFiles.map(() => ({
-      ...{
-        brightness: 0,
-        saturation: 0,
-        contrast: 0,
-        blur: 0,
-        vignette: 0,
-        crop: { x: 0, y: 0 },
-        zoom: 1,
-        croppedAreaPixels: null,
-      },
-    })) // 파일 수 만큼 초기값 생성
+      brightness: 0,
+      saturation: 0,
+      contrast: 0,
+      blur: 0,
+      vignette: 0,
+      crop: { x: 0, y: 0 },
+      zoom: 1,
+      croppedAreaPixels: null,
+    }))
   );
 
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -118,7 +118,7 @@ export default function ImageFilter() {
       await new Promise((res) => (img.onload = res));
 
       const setting = settings[i];
-      console.log("setting : ", setting);
+      //console.log("setting : ", setting);
       const { x, y, width, height } = setting.croppedAreaPixels || {
         x: 0,
         y: 0,
@@ -253,7 +253,7 @@ export default function ImageFilter() {
                   `총 ${savedFiles.length}개의 이미지가 저장되었습니다!`
                 );
                 setSaveFiles(savedFiles);
-                router.push("/post/new/write");
+                router.push("/post/new/image/write");
               }}
             >
               다음

@@ -41,6 +41,7 @@ model PostMedia {
   postId    Int
   type      MediaType
   url       String
+  assetId   String?
   order     Int
   createdAt DateTime  @default(now())
 

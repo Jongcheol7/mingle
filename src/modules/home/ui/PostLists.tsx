@@ -8,6 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import MuxPlayer from "@mux/mux-player-react";
 
 type Post = {
   id: number;
@@ -75,9 +76,9 @@ export default function PostLists() {
             <div className="w-full flex flex-col items-start gap-2 px-2">
               <p className="text-sm text-gray-800 mb-2">{post.content}</p>
               {post.medias &&
-                post.medias.length > 0 &&
-                post.medias[0]?.type === "IMAGE" &&
-                (post.medias.length === 1 ? (
+              post.medias.length > 0 &&
+              post.medias[0]?.type === "IMAGE" ? (
+                post.medias.length === 1 ? (
                   <Image
                     //src={post.medias[0].url}
                     src={"logo.svg"}
@@ -107,7 +108,23 @@ export default function PostLists() {
                       </SwiperSlide>
                     ))}
                   </Swiper>
-                ))}
+                )
+              ) : (
+                //비디오일때
+                <div className="w-full aspect-video overflow-hidden">
+                  <MuxPlayer
+                    playbackId={post.medias[0].url}
+                    className="w-full h-full object-contain"
+                    metadata={
+                      {
+                        // video_id: "video-id-123456",
+                        // video_title: "Big Buck Bunny",
+                        // viewer_user_id: "user-id-bc-789",
+                      }
+                    }
+                  />
+                </div>
+              )}
             </div>
 
             {/* 푸터 */}
