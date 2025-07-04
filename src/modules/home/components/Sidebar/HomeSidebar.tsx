@@ -9,6 +9,7 @@ import AuthButton from "@/modules/auth/ui/AuthButton";
 import {
   AlignJustify,
   Bell,
+  CircleUserRound,
   HomeIcon,
   MessagesSquareIcon,
   PlusSquare,
@@ -63,7 +64,11 @@ const data = {
       url: "/post/new",
       icon: PlusSquare,
     },
-
+    {
+      title: "프로필",
+      url: "/me",
+      icon: CircleUserRound,
+    },
     {
       title: "더보기",
       url: "/",
