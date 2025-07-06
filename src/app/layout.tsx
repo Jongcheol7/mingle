@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import ReactQueryProvider from "@/modules/common/ReactQueryProvider";
 import HomeLayout from "@/modules/home/layouts/HomeLayout";
 import { Toaster } from "sonner";
+import UserInitializer from "@/modules/auth/common/UserInitializer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,6 +25,7 @@ export default function RootLayout({
         <body className={inter.className}>
           <ReactQueryProvider>
             <HomeLayout>
+              <UserInitializer />
               {children}
               <Toaster position="bottom-center" richColors />
             </HomeLayout>

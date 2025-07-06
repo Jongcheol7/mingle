@@ -1,5 +1,8 @@
+// useUserStore.ts
 "use client";
+
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 type User = {
   id: string;
@@ -15,8 +18,15 @@ type UserState = {
   clearUser: () => void;
 };
 
-export const useUserStore = create<UserState>((set) => ({
-  user: null,
-  setUser: (user) => set({ user: user }),
-  clearUser: () => set({ user: null }),
-}));
+export const useUserStore = create<UserState>()(
+  persist<UserState>(
+    (set) => ({
+      user: null,
+      setUser: (user) => set({ user }),
+      clearUser: () => set({ user: null }),
+    }),
+    {
+      name: "clerk-user-storage",
+    }
+  )
+);
