@@ -83,4 +83,15 @@ const dummyComments: Comment[] = [
     },
     parentId: 3,
   },
+  {
+    id: 5,
+    content: "너무 잘했어요",
+    createdAt: "2025-07-06",
+    author: {
+      id: 1,
+      username: "이민영",
+      imageUrl: "/logo.svg",
+    },
+    parentId: null,
+  },
 ];

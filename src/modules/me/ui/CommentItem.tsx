@@ -32,8 +32,8 @@ export default function CommentItem({ comment, replies, depth = 0 }: Props) {
 
   return (
     <div
-      className="mb-4 pt-1"
-      style={{ paddingLeft: `${Math.min(depth, maxDepth) * 4}px` }}
+      className="mb-4 pt-2 ml-2"
+      style={{ paddingLeft: `${Math.min(depth, maxDepth) * 5}px` }}
     >
       {/* 본댓글 */}
       <div className="flex gap-2">
@@ -65,7 +65,11 @@ export default function CommentItem({ comment, replies, depth = 0 }: Props) {
               <p className="text-[12px] text-gray-800">
                 {getReplies(comment.id).length}
                 {"개 "}
-                {showReply ? "숨기기" : "더보기"}
+                {getReplies(comment.id).length > 0
+                  ? showReply
+                    ? "숨기기"
+                    : "더보기"
+                  : ""}
               </p>
             </div>
           </div>
