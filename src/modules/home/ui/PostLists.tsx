@@ -11,6 +11,7 @@ import "swiper/css/navigation";
 import MuxPlayer from "@mux/mux-player-react";
 import { useUploadStore } from "@/lib/store/useUploadStore";
 import { useEffect } from "react";
+import { usePostLikeMutation } from "@/hooks/usePostLikeMutation";
 
 type Post = {
   id: number;
@@ -25,10 +26,26 @@ type Post = {
       url: string;
     }
   ];
-  author: {
+  user: {
     username: string;
     imageUrl: string;
   };
+  likes: [
+    {
+      id: number;
+      userId: string;
+      postId: number;
+    }
+  ];
+  comments: [
+    {
+      id: number;
+      userId: string;
+      postId: number;
+      content: string;
+      parentId: number;
+    }
+  ];
 };
 
 const formatDate = (date: string) => {
@@ -43,6 +60,16 @@ const formatDate = (date: string) => {
 export default function PostLists() {
   const { data, error, isError } = usePostLists(); //refetch, isSuccess 생략
   const { clearFiles } = useUploadStore();
+
+  const {
+    mutate: likeMutate,
+    isPending: isLiking,
+    isSuccess,
+    data: likeResult,
+  } = usePostLikeMutation();
+  if (isSuccess) {
+    console.log("data:: ", likeResult);
+  }
 
   useEffect(() => {
     clearFiles();
@@ -65,14 +92,14 @@ export default function PostLists() {
             <div className="flex items-center w-full justify-between px-3 mb-2">
               <div className="flex items-center">
                 <Image
-                  src={post.author.imageUrl}
+                  src={post.user.imageUrl}
                   alt="profileImage"
                   width={30}
                   height={30}
                   priority
                   className="rounded-full mr-1"
                 />
-                <span>{post.author.username}</span>
+                <span>{post.user.username}</span>
                 <span className="text-[11px] tracking-tight ml-2 mt-1">
                   {formatDate(post.createdAt)}
                 </span>
@@ -138,12 +165,23 @@ export default function PostLists() {
             {/* 푸터 */}
             <div className="flex gap-2">
               <div className="flex items-center ">
-                <Heart className="cursor-pointer hover:text-rose-500 transition" />
-                <p className="text-sm text-gray-800">좋아요 1만개</p>
+                <Heart
+                  className={`cursor-pointer hover:text-rose-500 transition ${
+                    isLiking ? "disabled" : ""
+                  }`}
+                  onClick={() => {
+                    likeMutate(post.id);
+                  }}
+                />
+                <p className="text-sm text-gray-800">
+                  좋아요 {post.likes.length}개
+                </p>
               </div>
               <div className="flex items-center ">
                 <MessageCircle className="cursor-pointer hover:text-blue-500 transition" />
-                <p className="text-sm text-gray-800">댓글 27개</p>
+                <p className="text-sm text-gray-800">
+                  댓글 {post.comments.length}개
+                </p>
               </div>
               <div className="flex items-center ">
                 <Share2 className="cursor-pointer hover:text-emerald-500 transition" />

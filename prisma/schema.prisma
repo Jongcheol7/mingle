@@ -20,6 +20,7 @@ model User {
   posts    Post[]
   likes    Like[]
   comments Comment[]
+  commentLike CommentLike[]
 }
 
 model Post {
@@ -29,7 +30,7 @@ model Post {
   content   String
   createdAt DateTime @default(now())
 
-  author   User        @relation(fields: [userId], references: [clerkId])
+  user     User        @relation(fields: [userId], references: [clerkId])
   medias   PostMedia[]
   likes    Like[]
   comments Comment[]
@@ -72,7 +73,7 @@ model Like {
   postId    Int
   createdAt DateTime @default(now())
 
-  author User @relation(fields: [userId], references: [clerkId])
+  user   User @relation(fields: [userId], references: [clerkId])
   post   Post @relation(fields: [postId], references: [id])
 
   @@unique([userId, postId])
@@ -84,9 +85,24 @@ model Comment {
   postId    Int
   content   String
   createdAt DateTime @default(now())
+  parentId  Int? 
 
-  author User @relation(fields: [userId], references: [clerkId])
-  post   Post @relation(fields: [postId], references: [id])
+  user    User @relation(fields: [userId], references: [clerkId])
+  post    Post @relation(fields: [postId], references: [id])
+  parent  Comment? @relation("CommentRelation", fields:[parentId], references:[id])
+  replies Comment[] @relation("CommentRelation")
+  likes   CommentLike[]
+}
+
+model CommentLike {
+  id        Int   @id @default(autoincrement())
+  userId    String 
+  commentId Int 
+  createdAt DateTime  @default(now())
+
+  user    User  @relation(fields:[userId], references:[clerkId])
+  comment Comment @relation(fields:[commentId], references:[id])
+  @@unique([userId, commentId])
 }
 
 enum MediaType {

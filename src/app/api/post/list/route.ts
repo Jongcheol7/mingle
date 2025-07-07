@@ -13,13 +13,15 @@ export async function GET(request: Request) {
       cursor: cursor ? { id: Number(cursor) } : undefined,
       skip: cursor ? 1 : 0,
       include: {
-        author: true,
+        user: true,
         postTags: {
           include: {
             tag: true,
           },
         },
         medias: true,
+        likes: true,
+        comments: true,
       },
     });
     const nextCursor = posts.length > 0 ? posts[posts.length - 1].id : null;
