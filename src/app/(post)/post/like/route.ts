@@ -37,7 +37,7 @@ export async function POST(request: Request) {
         },
       });
       return NextResponse.json(
-        { message: "좋아요 취소 성공", liked: false },
+        { message: "좋아요 취소 성공", liked: false, postId },
         { status: 200 }
       );
     } else {
