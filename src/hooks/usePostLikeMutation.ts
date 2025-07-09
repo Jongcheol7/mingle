@@ -18,7 +18,7 @@ export function usePostLikeMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (postId: number) => {
-      const res = await axios.post("/post/like", {
+      const res = await axios.post("/api/post/like", {
         postId: postId,
       });
       return res.data;

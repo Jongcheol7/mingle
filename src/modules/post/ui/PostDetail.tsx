@@ -1,11 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import PostCommentLists from "@/modules/me/ui/PostCommentLists";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import PostCommentLists from "./PostCommentLists";
-import PostButtons from "@/modules/post/ui/PostButtons";
+import PostButtons from "./PostButtons";
+import CommentForm from "../components/CommentForm";
 
 type Post = {
   id: number;
@@ -20,7 +21,7 @@ type Post = {
       url: string;
     }
   ];
-  author: {
+  user: {
     username: string;
     imageUrl: string;
   };
@@ -31,7 +32,7 @@ type Props = {
   clickData: Post;
 };
 
-export default function MePostDetail({ setIsShowDetail, clickData }: Props) {
+export default function PostDetail({ setIsShowDetail, clickData }: Props) {
   const [currentIdx, setCurrentIdx] = useState(0);
   return (
     <div>
@@ -42,7 +43,7 @@ export default function MePostDetail({ setIsShowDetail, clickData }: Props) {
       />
 
       {/* 메인 팝업 */}
-      <Card className="fixed w-[70vw] h-[90vh] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 overflow-hidden p-0">
+      <Card className="fixed w-[70vw] h-[90vh] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 overflow-hidden rounded-none p-0">
         <CardContent className="flex h-full p-0">
           {/* 좌측 */}
           <div className="relative w-[60%] h-full">
@@ -83,8 +84,9 @@ export default function MePostDetail({ setIsShowDetail, clickData }: Props) {
               value={clickData.content}
               readOnly
               className="border-none resize-none focus-visible:ring-0"
-            ></Textarea>
+            />
             <PostButtons />
+            <CommentForm />
             <PostCommentLists />
           </div>
         </CardContent>

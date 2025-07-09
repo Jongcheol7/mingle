@@ -1,4 +1,4 @@
-import PostLists from "@/modules/home/ui/PostLists";
+import PostLists from "@/modules/post/ui/PostLists";
 
 export default async function Home() {
   return (

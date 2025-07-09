@@ -10,8 +10,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import MuxPlayer from "@mux/mux-player-react";
 import { useUploadStore } from "@/lib/store/useUploadStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePostLikeMutation } from "@/hooks/usePostLikeMutation";
+import PostDetail from "./PostDetail";
 
 type Post = {
   id: number;
@@ -60,6 +61,8 @@ const formatDate = (date: string) => {
 export default function PostLists() {
   const { data, error, isError } = usePostLists(); //refetch, isSuccess 생략
   const { clearFiles } = useUploadStore();
+  const [isShowDetail, setIsShowDetail] = useState(false);
+  const [clickData, setClickData] = useState<Post>();
 
   const {
     mutate: likeMutate,
@@ -178,7 +181,13 @@ export default function PostLists() {
                 </p>
               </div>
               <div className="flex items-center ">
-                <MessageCircle className="cursor-pointer hover:text-blue-500 transition" />
+                <MessageCircle
+                  className="cursor-pointer hover:text-blue-500 transition"
+                  onClick={() => {
+                    setIsShowDetail(!isShowDetail);
+                    setClickData(post);
+                  }}
+                />
                 <p className="text-sm text-gray-800">
                   댓글 {post.comments.length}개
                 </p>
@@ -190,6 +199,9 @@ export default function PostLists() {
             </div>
           </Card>
         ))
+      )}
+      {isShowDetail && (
+        <PostDetail setIsShowDetail={setIsShowDetail} clickData={clickData!} />
       )}
     </div>
   );
