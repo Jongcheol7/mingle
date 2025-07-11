@@ -13,6 +13,7 @@ type Post = {
   title: string;
   content: string;
   createdAt: string;
+  postId: number;
   medias: [
     {
       id: number;
@@ -86,7 +87,7 @@ export default function PostDetail({ setIsShowDetail, clickData }: Props) {
               className="border-none resize-none focus-visible:ring-0"
             />
             <PostButtons />
-            <CommentForm />
+            <CommentForm postId={clickData.postId} />
             <PostCommentLists />
           </div>
         </CardContent>

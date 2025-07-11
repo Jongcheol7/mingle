@@ -19,6 +19,7 @@ type Post = {
   title: string;
   content: string;
   createdAt: string;
+  postId: number;
   medias: [
     {
       id: number;

@@ -5,12 +5,19 @@ import { useForm } from "react-hook-form";
 type FormData = {
   content: string;
 };
+type Prop = {
+  postId: number;
+  parentId: number | null;
+};
 
-export default function CommentForm() {
+export default function CommentForm({ postId, parentId = null }: Prop) {
   const { register, handleSubmit, getValues } = useForm();
   const { mutate: saveCommentMutate, isPending: isCommenting } =
     useCommentMutation();
-  const onSubmit = (data: FormData) => {};
+  const onSubmit = (data: FormData) => {
+    console.log(data);
+    saveCommentMutate(postId, data.content, parentId);
+  };
   return (
     <div className="mt-3">
       <form onSubmit={handleSubmit(onSubmit)}>
