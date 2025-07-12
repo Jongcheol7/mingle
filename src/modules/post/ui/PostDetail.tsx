@@ -35,6 +35,7 @@ type Props = {
 
 export default function PostDetail({ setIsShowDetail, clickData }: Props) {
   const [currentIdx, setCurrentIdx] = useState(0);
+
   return (
     <div>
       {/* 배경 블러처리 */}
@@ -87,8 +88,8 @@ export default function PostDetail({ setIsShowDetail, clickData }: Props) {
               className="border-none resize-none focus-visible:ring-0"
             />
             <PostButtons />
-            <CommentForm postId={clickData.postId} />
-            <PostCommentLists />
+            <CommentForm postId={clickData.id} />
+            <PostCommentLists postId={clickData.id} />
           </div>
         </CardContent>
       </Card>

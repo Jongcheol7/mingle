@@ -7,17 +7,29 @@ type FormData = {
 };
 type Prop = {
   postId: number;
-  parentId: number | null;
+  parentId?: number | null;
 };
 
 export default function CommentForm({ postId, parentId = null }: Prop) {
-  const { register, handleSubmit, getValues } = useForm();
-  const { mutate: saveCommentMutate, isPending: isCommenting } =
-    useCommentMutation();
+  const { register, handleSubmit, setValue } = useForm<FormData>();
+  const {
+    mutate: saveCommentMutate,
+    isPending: isCommenting,
+    isSuccess,
+  } = useCommentMutation();
+
   const onSubmit = (data: FormData) => {
-    console.log(data);
-    saveCommentMutate(postId, data.content, parentId);
+    saveCommentMutate({
+      postId: postId,
+      content: data.content,
+      parentId: parentId,
+    });
   };
+
+  if (isSuccess) {
+    setValue("content", "");
+  }
+
   return (
     <div className="mt-3">
       <form onSubmit={handleSubmit(onSubmit)}>

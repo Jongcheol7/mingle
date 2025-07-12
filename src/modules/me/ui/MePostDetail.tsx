@@ -85,7 +85,7 @@ export default function MePostDetail({ setIsShowDetail, clickData }: Props) {
               className="border-none resize-none focus-visible:ring-0"
             ></Textarea>
             <PostButtons />
-            <PostCommentLists />
+            <PostCommentLists postId={clickData.id} />
           </div>
         </CardContent>
       </Card>

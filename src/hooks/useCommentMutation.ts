@@ -5,12 +5,12 @@ import { toast } from "sonner";
 type CommentProp = {
   postId: number;
   content: string;
-  parentId: number | null;
+  parentId?: number | null;
 };
 
 export function useCommentMutation() {
   return useMutation({
-    mutationFn: async ({ postId, content, parentId }: CommentProp) => {
+    mutationFn: async ({ postId, content, parentId = null }: CommentProp) => {
       const res = await axios.post("/api/post/comment", {
         postId,
         content,

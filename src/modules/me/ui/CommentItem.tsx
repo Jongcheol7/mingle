@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Share2 } from "lucide-react";
+import { Heart, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -7,7 +7,7 @@ type Comment = {
   id: number;
   content: string;
   createdAt: string;
-  author: {
+  user: {
     id: number;
     username: string;
     imageUrl: string;
@@ -38,7 +38,7 @@ export default function CommentItem({ comment, replies, depth = 0 }: Props) {
       {/* 본댓글 */}
       <div className="flex gap-2">
         <Image
-          src={comment.author.imageUrl}
+          src={comment.user.imageUrl}
           width={30}
           height={30}
           alt="프로필사진"
@@ -47,7 +47,7 @@ export default function CommentItem({ comment, replies, depth = 0 }: Props) {
         <div className="flex-1">
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-sm font-semibold">{comment.author.username}</p>
+              <p className="text-sm font-semibold">{comment.user.username}</p>
               <p className="text-[11px]">{comment.createdAt}</p>
             </div>
             <p className="text-sm">{comment.content}</p>

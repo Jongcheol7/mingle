@@ -49,3 +49,43 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const postId = Number(searchParams.get("postId"));
+  const cursor = searchParams.get("cursor");
+  const limit = Number(searchParams.get("limit") || 10);
+
+  if (!postId) {
+    console.error("댓글 조회에서 postId 가 없습니다.");
+    return NextResponse.json(
+      { error: "댓글 조회에서 postId 가 없습니다." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const comments = await prisma.comment.findMany({
+      where: {
+        postId,
+      },
+      include: {
+        likes: true,
+        replies: true,
+        user: true,
+      },
+      take: limit,
+      cursor: cursor ? { id: Number(cursor) } : undefined,
+      skip: cursor ? 1 : 0,
+    });
+    const nextCursor =
+      comments.length > 0 ? comments[comments.length - 1].id : null;
+    return NextResponse.json({ comments: comments, nextCursor: nextCursor });
+  } catch (err) {
+    console.error("댓글 조회에 실패했습니다.", err);
+    return NextResponse.json(
+      { error: "댓글 조회에 실패했습니다." },
+      { status: 500 }
+    );
+  }
+}
