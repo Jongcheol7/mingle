@@ -152,3 +152,8 @@ src\app\api\post\upload\video\route.ts 참고
 동영상 자르기를 위해 ffmpeg.wasm 패키지를 다운받는다. 이 라이브러리는 인기가 많고
 사용 예시도 많아서 채택해보도록 하겠다.
 npm install @ffmpeg/ffmpeg @ffmpeg/util
+
+## 채팅기능
+
+별도의 채팅을 위한 서버를 만들고 구축하였다.
+npx tsx index.ts 로 서버를 실행시킨다..

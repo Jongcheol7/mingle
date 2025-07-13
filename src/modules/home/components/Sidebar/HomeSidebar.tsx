@@ -51,7 +51,7 @@ const data = {
 
     {
       title: "메세지",
-      url: "/",
+      url: "/chat",
       icon: MessagesSquareIcon,
     },
     {
