@@ -62,6 +62,7 @@ export default function PostCommentLists({ postId }: Props) {
           comment={comment}
           replies={allComments ?? []}
           depth={0}
+          postId={postId}
         />
       ))}
     </div>

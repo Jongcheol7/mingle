@@ -1,3 +1,5 @@
+import { useCommentLikeMutation } from "@/hooks/useCommentLikeMutation";
+import CommentForm from "@/modules/post/components/CommentForm";
 import { Heart, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -7,6 +9,14 @@ type Comment = {
   id: number;
   content: string;
   createdAt: string;
+  postId: number;
+  likes: [
+    {
+      id: number;
+      userId: string;
+      postId: number;
+    }
+  ];
   user: {
     id: number;
     username: string;
@@ -19,9 +29,17 @@ type Props = {
   comment: Comment;
   replies: Comment[];
   depth: number;
+  postId: number;
 };
-export default function CommentItem({ comment, replies, depth = 0 }: Props) {
+export default function CommentItem({
+  comment,
+  replies,
+  depth = 0,
+  postId,
+}: Props) {
   const [showReply, setShowReply] = useState(false);
+  const [showCommentForm, setShowCommentForm] = useState(false);
+  const { mutate, isPending } = useCommentLikeMutation(comment.postId);
 
   //특정 부모에 대한 대댓글 필터링 해보자.
   const getReplies = (id: number) => {
@@ -29,6 +47,8 @@ export default function CommentItem({ comment, replies, depth = 0 }: Props) {
   };
   const nextDepth = depth + 1;
   const maxDepth = 3;
+
+  console.log("ddd : ", comment);
 
   return (
     <div
@@ -54,25 +74,45 @@ export default function CommentItem({ comment, replies, depth = 0 }: Props) {
           </div>
           <div className="flex gap-2">
             <div className="flex items-center ">
-              <Heart className="w-4 cursor-pointer hover:text-rose-500 transition" />
-              <p className="text-[12px] text-gray-800">1만개</p>
-            </div>
-            <div
-              className="flex items-center "
-              onClick={() => setShowReply(!showReply)}
-            >
-              <MessageCircle className="w-4 cursor-pointer hover:text-blue-500 transition" />
+              <Heart
+                className={`w-4 cursor-pointer hover:text-rose-500 transition ${
+                  isPending ? "disabled" : ""
+                }`}
+                onClick={() => {
+                  mutate(comment.id);
+                }}
+              />
               <p className="text-[12px] text-gray-800">
+                {comment.likes.length}개
+              </p>
+            </div>
+            <div className="flex items-center ">
+              <MessageCircle className="w-4 cursor-pointer hover:text-blue-500 transition" />
+              <p className="text-[12px] text-gray-800 flex gap-2">
                 {getReplies(comment.id).length}
                 {"개 "}
-                {getReplies(comment.id).length > 0
-                  ? showReply
-                    ? "숨기기"
-                    : "더보기"
-                  : ""}
+                {getReplies(comment.id).length > 0 ? (
+                  showReply ? (
+                    <span onClick={() => setShowReply(!showReply)}>숨기기</span>
+                  ) : (
+                    <span onClick={() => setShowReply(!showReply)}>더보기</span>
+                  )
+                ) : (
+                  ""
+                )}
+                <span
+                  onClick={() => {
+                    setShowCommentForm(!showCommentForm);
+                  }}
+                >
+                  {showCommentForm ? "닫기" : "댓글작성"}
+                </span>
               </p>
             </div>
           </div>
+          {showCommentForm && (
+            <CommentForm postId={postId} parentId={comment.id} />
+          )}
         </div>
       </div>
 
@@ -86,6 +126,7 @@ export default function CommentItem({ comment, replies, depth = 0 }: Props) {
               comment={reply}
               replies={replies} // 여기도 전체 댓글 넘겨야 함
               depth={nextDepth}
+              postId={postId}
             />
           ))}
         </div>
