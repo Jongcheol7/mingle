@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  console.log("ddd  dddd");
+
   const SIGNING_SECRET = process.env.CLERK_SIGNING_SECRET;
 
   if (!SIGNING_SECRET) {
@@ -52,6 +54,8 @@ export async function POST(req: Request) {
   // Do something with payload
   // For this guide, log payload to console
   const eventType = evt.type;
+
+  console.log("eventType : ", eventType);
 
   if (eventType === "user.created") {
     const { data } = evt;

@@ -1,7 +1,7 @@
 "use client";
 import { Card } from "@/components/ui/card";
 import { usePostLists } from "@/hooks/usePostLists";
-import { EllipsisIcon, Heart, MessageCircle, Share2 } from "lucide-react";
+import { Heart, MessageCircle, Share2 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -13,6 +13,7 @@ import { useUploadStore } from "@/lib/store/useUploadStore";
 import { useEffect, useState } from "react";
 import { usePostLikeMutation } from "@/hooks/usePostLikeMutation";
 import PostDetail from "./PostDetail";
+import PostHeader from "./PostHeader";
 
 type Post = {
   id: number;
@@ -50,15 +51,6 @@ type Post = {
   ];
 };
 
-const formatDate = (date: string) => {
-  const formatDate = new Date(date).toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-  return formatDate;
-};
-
 export default function PostLists() {
   const { data, error, isError } = usePostLists(); //refetch, isSuccess 생략
   const { clearFiles } = useUploadStore();
@@ -93,23 +85,7 @@ export default function PostLists() {
             className="relative my-5 px-2 w-[600px]  flex flex-col items-center justify-between shadow-sm gap-4"
           >
             {/* 헤더 */}
-            <div className="flex items-center w-full justify-between px-3 mb-2">
-              <div className="flex items-center">
-                <Image
-                  src={post.user.imageUrl}
-                  alt="profileImage"
-                  width={30}
-                  height={30}
-                  priority
-                  className="rounded-full mr-1"
-                />
-                <span>{post.user.username}</span>
-                <span className="text-[11px] tracking-tight ml-2 mt-1">
-                  {formatDate(post.createdAt)}
-                </span>
-              </div>
-              <EllipsisIcon className="mt-1 cursor-pointer" />
-            </div>
+            <PostHeader post={post} />
 
             {/* 메인 */}
             <div className="w-full flex flex-col items-start gap-2 px-2">
@@ -119,8 +95,8 @@ export default function PostLists() {
               post.medias[0]?.type === "IMAGE" ? (
                 post.medias.length === 1 ? (
                   <Image
-                    //src={post.medias[0].url}
-                    src={"logo.svg"}
+                    src={post.medias[0].url}
+                    //src={"logo.svg"}
                     alt="Post image"
                     width={400}
                     height={400}
