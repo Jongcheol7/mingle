@@ -77,7 +77,7 @@ export default function PostLists() {
 
   console.log("data: ", data);
   return (
-    <div className="flex flex-col items-center mr-4">
+    <div className="flex flex-col items-center mr-4 overflow-y-auto h-[100vh] scrollbar-none">
       {data?.pages.map((page) =>
         page.posts.map((post: Post) => (
           <Card

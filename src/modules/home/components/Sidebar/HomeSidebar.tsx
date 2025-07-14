@@ -84,7 +84,7 @@ export default function HomeSidebar() {
         <SidebarHeader className="py-7">
           <NavHeader items={data.navHeader} />
         </SidebarHeader>
-        <SidebarContent className="">
+        <SidebarContent className="overflow-y-auto h-[100vh] scrollbar-none">
           <NavMain items={data.navMain} />
         </SidebarContent>
         <SidebarFooter>
