@@ -4,13 +4,29 @@ import { io, Socket } from "socket.io-client";
 // 서버 주소
 const SOCKET_URL = "http://localhost:4000";
 
-// 이벤트 타입 미리 지정해준다 (선택사항)
-type Event = {
-  chat: (message: string) => void;
+type MessageType = {
+  senderId: string;
+  sender: string;
+  message: string;
 };
 
+type ServerToClientEvents = {
+  chat: (message: MessageType) => void;
+};
+
+type ClientToServerEvents = {
+  chat: (message: MessageType) => void;
+};
+
+// 이벤트 타입 미리 지정해준다 (선택사항)
+// type Event = {
+//   chat: (message: string) => void;
+// };
+
 export default function useSocket() {
-  const socketRef = useRef<Socket<Event> | null>(null);
+  const socketRef = useRef<Socket<
+    ServerToClientEvents | ClientToServerEvents
+  > | null>(null);
 
   useEffect(() => {
     // 소켓 연결

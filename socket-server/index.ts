@@ -3,6 +3,12 @@ import http from "http";
 import { Server } from "socket.io";
 import cors from "cors"; //다른 주소에서도 서버에 접근할수 있도록 허용해주는 설정
 
+type MessageType = {
+  senderId: string;
+  sender: string;
+  message: string;
+};
+
 // 익스프레스 앱 생성
 const app = express();
 // http서버만들기 (express를 감싸서 socket.it랑 함께 씀)
@@ -33,7 +39,7 @@ io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
   // 메세지 수신 (클라이언트가 'chat' 이벤트로 메시지를 보냈을 때 실행됨)
-  socket.on("chat", (message: string) => {
+  socket.on("chat", (message: MessageType) => {
     console.log("Message received:", message);
     // 전체 클라이언트에게 전송
     io.emit("chat", message);

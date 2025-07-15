@@ -2,14 +2,22 @@
 "use client";
 
 import useSocket from "@/hooks/useSocket";
+import { useUserStore } from "@/lib/store/useUserStore";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 type ChatWindowProps = {
   username: string;
   userUrl: string;
   onClose: () => void;
+};
+
+type MessageType = {
+  senderId: string;
+  sender: string;
+  message: string;
 };
 
 export default function ChatWindow({
@@ -18,9 +26,14 @@ export default function ChatWindow({
   onClose,
 }: ChatWindowProps) {
   const socketRef = useSocket();
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<MessageType[]>([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const { user } = useUserStore();
+
+  if (!user) {
+    toast.error("로그인 정보가 없습니다.");
+  }
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,7 +44,7 @@ export default function ChatWindow({
     if (!socket) return;
 
     // 서버에서 메세지 받기
-    socket.on("chat", (message) => {
+    socket.on("chat", (message: MessageType) => {
       setMessages((prev) => [...prev, message]);
     });
 
@@ -39,7 +52,7 @@ export default function ChatWindow({
     return () => {
       socket.off("chat");
     };
-  }, [socketRef]);
+  }, [socketRef, username]);
 
   // 보내기 버튼 클릭시
   const handleSend = () => {
@@ -47,7 +60,11 @@ export default function ChatWindow({
     if (!socket || input.trim() === "") return;
 
     // 서버로 메세지 보내기
-    socket.emit("chat", input);
+    socket.emit("chat", {
+      senderId: user!.id,
+      sender: user!.username,
+      message: input,
+    });
     setInput("");
   };
 
@@ -70,9 +87,22 @@ export default function ChatWindow({
         </button>
       </div>
       <div className="flex-1 p-3 overflow-y-auto max-h-[300px] scrollbar-none">
-        {messages.map((msg, idx) => (
+        {/* {messages.map((msg, idx) => (
           <div key={idx} className="mb-2 bg-gray-100 rounded p-2 text-sm">
-            {msg}
+            {msg.message}
+          </div>
+        ))} */}
+        {messages.map((msg: MessageType, idx) => (
+          <div key={idx} className="flex flex-col w-full">
+            <div
+              className={`max-w-[75%] w-fit break-words mb-2 bg-gray-100 rounded p-2 text-sm ${
+                msg.senderId === user?.id
+                  ? "self-end bg-blue-100"
+                  : "self-start"
+              }`}
+            >
+              {msg.message}
+            </div>
           </div>
         ))}
         <div ref={messagesEndRef} />

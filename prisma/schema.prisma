@@ -21,6 +21,8 @@ model User {
   likes    Like[]
   comments Comment[]
   commentLike CommentLike[]
+  message  Message[]
+  chatRoomMember ChatRoomMember[]
 }
 
 model Post {
@@ -35,6 +37,7 @@ model Post {
   likes    Like[]
   comments Comment[]
   postTags PostTag[]
+  
 }
 
 model PostMedia {
@@ -108,4 +111,36 @@ model CommentLike {
 enum MediaType {
   IMAGE
   VIDEO
+}
+
+model ChatRoom {
+  id        Int       @id @default(autoincrement())
+  roomName  String?
+  isDirect  Boolean
+  createdAt DateTime  @default(now())
+
+  chatRoomMember ChatRoomMember[]
+  message  Message[]
+}
+
+model ChatRoomMember {
+  id        Int      @id @default(autoincrement())
+  userId    String 
+  roomId    Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, roomId])
+  chatRoom  ChatRoom  @relation(fields:[roomId], references:[id])
+  user      User      @relation(fields:[userId], references:[clerkId])
+}
+
+model Message {
+  id        Int       @id @default(autoincrement())
+  roomId    Int
+  senderId  String 
+  message   String 
+  createdAt DateTime  @default(now())
+
+  sender    User      @relation(fields:[senderId], references:[clerkId])
+  chatRoom  ChatRoom  @relation(fields:[roomId], references:[id])
 }
