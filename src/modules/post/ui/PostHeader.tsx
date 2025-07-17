@@ -21,6 +21,7 @@ type Post = {
     user: {
       username: string;
       imageUrl: string;
+      clerkId: string;
     };
   };
 };
@@ -74,8 +75,9 @@ export default function PostHeader({ post }: Post) {
       {/* 채팅창 띄우기 */}
       {chatOpen && (
         <ChatWindow
-          username={post.user.username}
-          userUrl={post.user.imageUrl}
+          receiverName={post.user.username}
+          receiverUrl={post.user.imageUrl}
+          receiverId={post.user.clerkId}
           onClose={() => setChatOpen(false)}
         />
       )}

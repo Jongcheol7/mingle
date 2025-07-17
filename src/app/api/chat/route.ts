@@ -2,17 +2,17 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  const { sender, receiver, isDirect, roomName, message, roomId } =
+  const { senderId, receiverId, isDirect, roomName, message, roomId } =
     await request.json();
 
-  if (!sender) {
+  if (!senderId) {
     console.error("보내는 사람 정보가 없습니다.");
     return NextResponse.json(
       { error: "보내는 사람 정보가 없습니다." },
       { status: 400 }
     );
   }
-  if (!receiver) {
+  if (!receiverId) {
     console.error("받는 사람 정보가 없습니다.");
     return NextResponse.json(
       { error: "받는 사람 정보가 없습니다." },
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
           isDirect,
           roomName,
           chatRoomMember: {
-            create: [{ userId: sender }, { userId: receiver }],
+            create: [{ userId: senderId }, { userId: receiverId }],
           },
         },
       });
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     const messageSave = await prisma.message.create({
       data: {
         roomId: finalRoomId,
-        senderId: sender,
+        senderId,
         message,
       },
       include: {

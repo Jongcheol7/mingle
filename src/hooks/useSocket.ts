@@ -6,27 +6,25 @@ const SOCKET_URL = "http://localhost:4000";
 
 type MessageType = {
   senderId: string;
-  sender: string;
+  receiverId: string;
+  senderName: string;
+  receiverName: string;
+  isDirect: boolean;
+  roomName: string;
   message: string;
+  roomId: number | undefined;
 };
 
-type ServerToClientEvents = {
-  chat: (message: MessageType) => void;
-};
+// type ServerToClientEvents = {
+//   chat: (message: MessageType) => void;
+// };
 
 type ClientToServerEvents = {
   chat: (message: MessageType) => void;
 };
 
-// 이벤트 타입 미리 지정해준다 (선택사항)
-// type Event = {
-//   chat: (message: string) => void;
-// };
-
 export default function useSocket() {
-  const socketRef = useRef<Socket<
-    ServerToClientEvents | ClientToServerEvents
-  > | null>(null);
+  const socketRef = useRef<Socket<ClientToServerEvents>>(null);
 
   useEffect(() => {
     // 소켓 연결

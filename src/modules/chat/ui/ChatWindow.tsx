@@ -9,20 +9,27 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 type ChatWindowProps = {
-  username: string;
-  userUrl: string;
+  receiverName: string;
+  receiverUrl: string;
+  receiverId: string;
   onClose: () => void;
 };
 
 type MessageType = {
   senderId: string;
-  sender: string;
+  receiverId: string;
+  senderName: string;
+  receiverName: string;
+  isDirect: boolean;
+  roomName: string;
   message: string;
+  roomId: number | undefined;
 };
 
 export default function ChatWindow({
-  username,
-  userUrl,
+  receiverName,
+  receiverUrl,
+  receiverId,
   onClose,
 }: ChatWindowProps) {
   const socketRef = useSocket();
@@ -52,7 +59,7 @@ export default function ChatWindow({
     return () => {
       socket.off("chat");
     };
-  }, [socketRef, username]);
+  }, [socketRef, receiverId]);
 
   // 보내기 버튼 클릭시
   const handleSend = () => {
@@ -62,8 +69,14 @@ export default function ChatWindow({
     // 서버로 메세지 보내기
     socket.emit("chat", {
       senderId: user!.id,
-      sender: user!.username,
+      receiverId,
+      senderName: user!.username,
+      receiverName,
+      isDirect: true,
+      roomName: receiverName,
       message: input,
+      roomId:
+        messages.length > 0 ? messages[messages.length - 1].roomId : undefined,
     });
     setInput("");
   };
@@ -73,14 +86,14 @@ export default function ChatWindow({
       <div className="flex items-center justify-between p-3 border-b">
         <div className="flex gap-1 items-center">
           <Image
-            src={userUrl}
+            src={receiverUrl}
             alt="profileImage"
             width={30}
             height={30}
             priority
             className="rounded-full mr-1"
           />
-          <span className="font-semibold">{username}</span>
+          <span className="font-semibold">{receiverName}</span>
         </div>
         <button onClick={onClose}>
           <X size={18} />
