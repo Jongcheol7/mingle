@@ -1,6 +1,44 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const roomId = Number(searchParams.get("roomId"));
+  const cursor = searchParams.get("cursor");
+  const limit = Number(searchParams.get("limit"));
+
+  if (!roomId) {
+    console.error("채팅내용 조회중 방 번호가 없습니다.");
+    return NextResponse.json(
+      { error: "채팅내용 조회중 방 번호가 없습니다." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const result = await prisma.message.findMany({
+      where: { roomId, ...(cursor && { id: { lt: Number(cursor) } }) },
+      include: { sender: true, chatRoom: true },
+      take: limit,
+      orderBy: { id: "desc" },
+    });
+    const nextCursor = result.length > 0 ? result[result.length - 1].id : null;
+    return NextResponse.json({ result, nextCursor });
+  } catch (err) {
+    console.error("채팅내용 조회에 실패했습니다.", err);
+    return NextResponse.json(
+      { error: "채팅내용 조회에 실패했습니다." },
+      { status: 500 }
+    );
+  }
+}
+
+/*
+미사용
+
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+
 export async function POST(request: Request) {
   const { senderId, receiverId, isDirect, roomName, message, roomId } =
     await request.json();
@@ -63,3 +101,4 @@ export async function POST(request: Request) {
     );
   }
 }
+*/

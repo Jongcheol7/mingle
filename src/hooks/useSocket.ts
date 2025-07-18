@@ -15,10 +15,6 @@ type MessageType = {
   roomId: number | undefined;
 };
 
-// type ServerToClientEvents = {
-//   chat: (message: MessageType) => void;
-// };
-
 type ClientToServerEvents = {
   chat: (message: MessageType) => void;
 };

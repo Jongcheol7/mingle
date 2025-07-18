@@ -65,7 +65,7 @@ io.on("connection", (socket) => {
     try {
       let finalRoomId = message.roomId;
       // 1. 방이 없다면 채팅방을 만들자.
-      if (!message.roomId) {
+      if (message.roomId === 0) {
         const newRoomId = await prisma.chatRoom.create({
           data: {
             isDirect: message.isDirect,

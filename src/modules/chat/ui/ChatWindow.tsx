@@ -1,8 +1,10 @@
 // components/ChatWindow.tsx
 "use client";
 
+import { useChatMessage } from "@/hooks/useChatMessages";
 import useSocket from "@/hooks/useSocket";
 import { useUserStore } from "@/lib/store/useUserStore";
+import axios from "axios";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -37,10 +39,36 @@ export default function ChatWindow({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const { user } = useUserStore();
+  const [roomId, setRoomId] = useState(null);
 
-  if (!user) {
-    toast.error("로그인 정보가 없습니다.");
-  }
+  useEffect(() => {
+    if (!user) {
+      toast.error("로그인 정보가 없습니다.");
+    }
+
+    // 1:1 채팅방 아이디 불러오기
+    const fetchRoomId = async () => {
+      try {
+        const res = await axios.get("/api/chat/room", {
+          params: { senderId: user!.id, receiverId },
+        });
+        setRoomId(res.data.roomId);
+      } catch (err) {
+        console.error("채팅방 조회 실패", err);
+        toast.error("채팅방을 가져오지 못했습니다.");
+      }
+    };
+    fetchRoomId();
+  }, [user, receiverId, setRoomId]);
+
+  const { data, isSuccess } = useChatMessage(roomId ?? 0);
+
+  useEffect(() => {
+    if (isSuccess && data.pages) {
+      const allMessages = data.pages.flatMap((page) => page.result).reverse();
+      setMessages(allMessages);
+    }
+  }, [data, isSuccess]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -75,8 +103,7 @@ export default function ChatWindow({
       isDirect: true,
       roomName: receiverName,
       message: input,
-      roomId:
-        messages.length > 0 ? messages[messages.length - 1].roomId : undefined,
+      roomId: roomId ?? 0,
     });
     setInput("");
   };
@@ -100,11 +127,6 @@ export default function ChatWindow({
         </button>
       </div>
       <div className="flex-1 p-3 overflow-y-auto max-h-[300px] scrollbar-none">
-        {/* {messages.map((msg, idx) => (
-          <div key={idx} className="mb-2 bg-gray-100 rounded p-2 text-sm">
-            {msg.message}
-          </div>
-        ))} */}
         {messages.map((msg: MessageType, idx) => (
           <div key={idx} className="flex flex-col w-full">
             <div
