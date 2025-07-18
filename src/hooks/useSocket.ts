@@ -13,6 +13,7 @@ type MessageType = {
   roomName: string;
   message: string;
   roomId: number | undefined;
+  createdAt?: Date;
 };
 
 type ClientToServerEvents = {

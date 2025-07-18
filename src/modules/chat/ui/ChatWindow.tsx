@@ -4,6 +4,7 @@
 import { useChatMessage } from "@/hooks/useChatMessages";
 import useSocket from "@/hooks/useSocket";
 import { useUserStore } from "@/lib/store/useUserStore";
+import { timeTransform } from "@/modules/common/TimeTransform";
 import axios from "axios";
 import { X } from "lucide-react";
 import Image from "next/image";
@@ -26,6 +27,7 @@ type MessageType = {
   roomName: string;
   message: string;
   roomId: number | undefined;
+  createdAt?: Date;
 };
 
 export default function ChatWindow({
@@ -41,12 +43,11 @@ export default function ChatWindow({
   const { user } = useUserStore();
   const [roomId, setRoomId] = useState(null);
 
+  // 1:1 채팅 방번호 불러오기
   useEffect(() => {
     if (!user) {
       toast.error("로그인 정보가 없습니다.");
     }
-
-    // 1:1 채팅방 아이디 불러오기
     const fetchRoomId = async () => {
       try {
         const res = await axios.get("/api/chat/room", {
@@ -61,8 +62,8 @@ export default function ChatWindow({
     fetchRoomId();
   }, [user, receiverId, setRoomId]);
 
+  // 채팅 내용 조회하기
   const { data, isSuccess } = useChatMessage(roomId ?? 0);
-
   useEffect(() => {
     if (isSuccess && data.pages) {
       const allMessages = data.pages.flatMap((page) => page.result).reverse();
@@ -70,10 +71,14 @@ export default function ChatWindow({
     }
   }, [data, isSuccess]);
 
+  console.log("ddd: ", messages);
+
+  // 스크롤 하단 이동
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // 소켓 메세지 송수신
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket) return;
@@ -127,19 +132,37 @@ export default function ChatWindow({
         </button>
       </div>
       <div className="flex-1 p-3 overflow-y-auto max-h-[300px] scrollbar-none">
-        {messages.map((msg: MessageType, idx) => (
-          <div key={idx} className="flex flex-col w-full">
+        {messages.map((msg: MessageType, idx) => {
+          const isMe = msg.senderId === user?.id;
+          return (
             <div
-              className={`max-w-[75%] w-fit break-words mb-2 bg-gray-100 rounded p-2 text-sm ${
-                msg.senderId === user?.id
-                  ? "self-end bg-blue-100"
-                  : "self-start"
+              key={idx}
+              className={`flex w-full mb-1 ${
+                isMe ? "justify-end" : "justify-start"
               }`}
             >
-              {msg.message}
+              <div
+                className={`flex items-end gap-1 ${
+                  isMe ? "flex-row-reverse" : "flex-row"
+                }`}
+              >
+                <div
+                  className={`max-w-[75%] break-words rounded-xl px-2 py-1 text-sm ${
+                    isMe ? "bg-blue-100" : "bg-gray-100"
+                  }`}
+                >
+                  {msg.message}
+                </div>
+                <div className="text-[10px] text-gray-500 leading-none">
+                  <div>{timeTransform(msg.createdAt!).date}</div>
+                  <div className={`${isMe ? "text-right" : "text-left"}`}>
+                    {timeTransform(msg.createdAt!).time}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
       <div className="flex border-t p-2">
