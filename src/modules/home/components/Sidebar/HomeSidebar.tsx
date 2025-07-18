@@ -10,7 +10,7 @@ import {
   AlignJustify,
   Bell,
   CircleUserRound,
-  HomeIcon,
+  //HomeIcon,
   MessagesSquareIcon,
   PlusSquare,
   SearchIcon,
@@ -27,17 +27,17 @@ const data = {
   },
 
   navHeader: {
-    name: "Mingle",
+    name: "Ｍｉｎｇｌｅ",
     url: "/",
-    logo: "/logo.svg",
+    logo: "/mingle_logo.png",
   },
 
   navMain: [
-    {
-      title: "홈",
-      url: "/",
-      icon: HomeIcon,
-    },
+    // {
+    //   title: "홈",
+    //   url: "/",
+    //   icon: HomeIcon,
+    // },
     {
       title: "검색",
       url: "/",

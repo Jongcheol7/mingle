@@ -33,7 +33,9 @@ export default function NavHeader({ items }: Props) {
               />
             </div>
             <div className="grid flex-1 text-left text-lg leading-tight">
-              <span className="truncate font-bold">{items.name}</span>
+              <span className="truncate font-bold text-sky-500">
+                {items.name}
+              </span>
             </div>
           </Link>
         </SidebarMenuButton>
