@@ -17,6 +17,7 @@ export function usePostDeleteMutation() {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["mePostLists"] });
+      queryClient.invalidateQueries({ queryKey: ["postLists"] });
       variables.onClose(false);
       toast.success("게시글이 삭제되었습니다!");
     },

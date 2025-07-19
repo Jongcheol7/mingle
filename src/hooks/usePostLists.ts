@@ -15,6 +15,6 @@ export function usePostLists() {
       return lastPage.nextCursor ?? undefined;
     },
     initialPageParam: null,
-    // staleTime: 1000 * 60 * 5,
+    staleTime: 0,
   });
 }

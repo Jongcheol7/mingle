@@ -4,6 +4,8 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 const Bucket = process.env.AWS_BUCKET_NAME;
+const MUX_TOKEN_ID = process.env.MUX_TOKEN_ID;
+const MUX_TOKEN_SECRET = process.env.MUX_TOKEN_SECRET;
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
   credentials: {
@@ -150,24 +152,41 @@ export async function DELETE(request: Request) {
   }
 
   try {
-    // POST를 삭제하기 전에 S3에 있는 사진부터 삭제하자.
+    // POST를 삭제하기 전에 S3 혹은 MUX 있는 사진이나 영상부터 삭제하자.
     const medias = await prisma.postMedia.findMany({
       where: { postId },
     });
 
-    const objectToDelete = medias.map((media) => {
-      return {
-        Key: media.url.split("/").pop()!,
-      };
-    });
+    // S3
+    if (medias.length > 0 && medias[0].type === "IMAGE") {
+      const objectToDelete = medias.map((media) => {
+        return {
+          Key: media.url.split("/").pop()!,
+        };
+      });
 
-    if (objectToDelete.length > 0) {
-      await s3.send(
-        new DeleteObjectsCommand({
-          Bucket,
-          Delete: { Objects: objectToDelete },
-        })
-      );
+      if (objectToDelete.length > 0) {
+        await s3.send(
+          new DeleteObjectsCommand({
+            Bucket,
+            Delete: { Objects: objectToDelete },
+          })
+        );
+      }
+    }
+    // MUX
+    else if (medias.length > 0 && medias[0].type === "VIDEO") {
+      const assetId = medias[0].assetId;
+      await fetch(`https://api.mux.com/video/v1/assets/${assetId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization:
+            "Basic " +
+            Buffer.from(`${MUX_TOKEN_ID}:${MUX_TOKEN_SECRET}`).toString(
+              "base64"
+            ),
+        },
+      });
     }
 
     await prisma.post.update({
