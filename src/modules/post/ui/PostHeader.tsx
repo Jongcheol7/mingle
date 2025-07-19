@@ -7,24 +7,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ChatWindow from "@/modules/chat/ui/ChatWindow";
+import { Post } from "@/types/post";
 import { EllipsisIcon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-
-type Post = {
-  post: {
-    id: number;
-    title: string;
-    content: string;
-    createdAt: string;
-    postId: number;
-    user: {
-      username: string;
-      imageUrl: string;
-      clerkId: string;
-    };
-  };
-};
 
 const formatDate = (date: string) => {
   const formatDate = new Date(date).toLocaleDateString("ko-KR", {
@@ -35,7 +21,11 @@ const formatDate = (date: string) => {
   return formatDate;
 };
 
-export default function PostHeader({ post }: Post) {
+type Props = {
+  post: Post;
+};
+
+export default function PostHeader({ post }: Props) {
   const [chatOpen, setChatOpen] = useState(false);
 
   return (

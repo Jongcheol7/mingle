@@ -14,42 +14,7 @@ import { useEffect, useState } from "react";
 import { usePostLikeMutation } from "@/hooks/usePostLikeMutation";
 import PostDetail from "./PostDetail";
 import PostHeader from "./PostHeader";
-
-type Post = {
-  id: number;
-  title: string;
-  content: string;
-  createdAt: string;
-  postId: number;
-  medias: [
-    {
-      id: number;
-      postId: number;
-      type: string;
-      url: string;
-    }
-  ];
-  user: {
-    username: string;
-    imageUrl: string;
-  };
-  likes: [
-    {
-      id: number;
-      userId: string;
-      postId: number;
-    }
-  ];
-  comments: [
-    {
-      id: number;
-      userId: string;
-      postId: number;
-      content: string;
-      parentId: number;
-    }
-  ];
-};
+import { Post } from "@/types/post";
 
 export default function PostLists() {
   const { data, error, isError } = usePostLists(); //refetch, isSuccess 생략
@@ -171,7 +136,7 @@ export default function PostLists() {
               </div>
               <div className="flex items-center ">
                 <Share2 className="cursor-pointer hover:text-emerald-500 transition" />
-                <p className="text-sm text-gray-800">공유 300개</p>
+                <p className="text-sm text-gray-800">공유 0개</p>
               </div>
             </div>
           </Card>

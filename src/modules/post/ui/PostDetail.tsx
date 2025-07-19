@@ -7,26 +7,7 @@ import Image from "next/image";
 import { useState } from "react";
 import PostButtons from "./PostButtons";
 import CommentForm from "../components/CommentForm";
-
-type Post = {
-  id: number;
-  title: string;
-  content: string;
-  createdAt: string;
-  postId: number;
-  medias: [
-    {
-      id: number;
-      postId: number;
-      type: string;
-      url: string;
-    }
-  ];
-  user: {
-    username: string;
-    imageUrl: string;
-  };
-};
+import { Post } from "@/types/post";
 
 type Props = {
   setIsShowDetail: (value: boolean) => void;
@@ -35,6 +16,8 @@ type Props = {
 
 export default function PostDetail({ setIsShowDetail, clickData }: Props) {
   const [currentIdx, setCurrentIdx] = useState(0);
+
+  console.log("ddd : ", clickData);
 
   return (
     <div>
@@ -87,7 +70,7 @@ export default function PostDetail({ setIsShowDetail, clickData }: Props) {
               readOnly
               className="border-none resize-none focus-visible:ring-0"
             />
-            <PostButtons />
+            <PostButtons clickData={clickData} />
             <CommentForm postId={clickData.id} />
             <PostCommentLists postId={clickData.id} />
           </div>

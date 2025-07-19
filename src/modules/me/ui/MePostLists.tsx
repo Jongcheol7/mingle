@@ -4,25 +4,7 @@ import { useMePostLists } from "@/hooks/useMePostLists";
 import Image from "next/image";
 import { useState } from "react";
 import MePostDetail from "./MePostDetail";
-
-type Post = {
-  id: number;
-  title: string;
-  content: string;
-  createdAt: string;
-  medias: [
-    {
-      id: number;
-      postId: number;
-      type: string;
-      url: string;
-    }
-  ];
-  author: {
-    username: string;
-    imageUrl: string;
-  };
-};
+import { Post } from "@/types/post";
 
 export default function MePostLists() {
   const { data } = useMePostLists();

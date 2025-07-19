@@ -6,25 +6,7 @@ import Image from "next/image";
 import { useState } from "react";
 import PostCommentLists from "./PostCommentLists";
 import PostButtons from "@/modules/post/ui/PostButtons";
-
-type Post = {
-  id: number;
-  title: string;
-  content: string;
-  createdAt: string;
-  medias: [
-    {
-      id: number;
-      postId: number;
-      type: string;
-      url: string;
-    }
-  ];
-  author: {
-    username: string;
-    imageUrl: string;
-  };
-};
+import { Post } from "@/types/post";
 
 type Props = {
   setIsShowDetail: (value: boolean) => void;
@@ -84,7 +66,7 @@ export default function MePostDetail({ setIsShowDetail, clickData }: Props) {
               readOnly
               className="border-none resize-none focus-visible:ring-0"
             ></Textarea>
-            <PostButtons />
+            <PostButtons clickData={clickData} />
             <PostCommentLists postId={clickData.id} />
           </div>
         </CardContent>

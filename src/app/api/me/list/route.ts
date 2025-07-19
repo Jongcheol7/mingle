@@ -26,6 +26,14 @@ export async function GET(request: Request) {
       skip: cursor ? 1 : 0,
       include: {
         medias: true,
+        user: true,
+        postTags: {
+          include: {
+            tag: true,
+          },
+        },
+        likes: true,
+        comments: true,
       },
     });
     const nextCursor = posts.length > 0 ? posts[posts.length - 1].id : null;
