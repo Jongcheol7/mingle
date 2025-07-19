@@ -4,6 +4,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import AuthButton from "@/modules/auth/ui/AuthButton";
 import {
@@ -81,7 +82,8 @@ export default function HomeSidebar() {
   return (
     <>
       <Sidebar collapsible="icon">
-        <SidebarHeader className="py-7">
+        <SidebarHeader className="py-7 relative">
+          <SidebarTrigger className="absolute top-0 right-0" />
           <NavHeader items={data.navHeader} />
         </SidebarHeader>
         <SidebarContent className="overflow-y-auto h-[100vh] scrollbar-none">

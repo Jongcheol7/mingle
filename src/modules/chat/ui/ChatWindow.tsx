@@ -5,6 +5,7 @@ import { useChatMessage } from "@/hooks/useChatMessages";
 import useSocket from "@/hooks/useSocket";
 import { useUserStore } from "@/lib/store/useUserStore";
 import { timeTransform } from "@/modules/common/TimeTransform";
+import { MessageType } from "@/types/message";
 import axios from "axios";
 import { X } from "lucide-react";
 import Image from "next/image";
@@ -16,18 +17,6 @@ type ChatWindowProps = {
   receiverUrl: string;
   receiverId: string;
   onClose: () => void;
-};
-
-type MessageType = {
-  senderId: string;
-  receiverId: string;
-  senderName: string;
-  receiverName: string;
-  isDirect: boolean;
-  roomName: string;
-  message: string;
-  roomId: number | undefined;
-  createdAt?: Date;
 };
 
 export default function ChatWindow({
