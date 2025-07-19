@@ -10,6 +10,7 @@ import axios from "axios";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 
 type ChatWindowProps = {
@@ -102,8 +103,8 @@ export default function ChatWindow({
     setInput("");
   };
 
-  return (
-    <div className="fixed bottom-4 right-4 w-[350px] h-[400px] bg-white border shadow-xl rounded-xl flex flex-col z-50">
+  return createPortal(
+    <div className="fixed bottom-4 right-4 w-[350px] h-[400px] bg-white border shadow-xl rounded-xl flex flex-col z-60">
       <div className="flex items-center justify-between p-3 border-b">
         <div className="flex gap-1 items-center">
           <Image
@@ -174,6 +175,7 @@ export default function ChatWindow({
           보내기
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

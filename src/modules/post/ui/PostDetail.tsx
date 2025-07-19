@@ -8,6 +8,7 @@ import { useState } from "react";
 import PostButtons from "./PostButtons";
 import CommentForm from "../components/CommentForm";
 import { Post } from "@/types/post";
+import PostHeader from "./PostHeader";
 
 type Props = {
   setIsShowDetail: (value: boolean) => void;
@@ -61,6 +62,9 @@ export default function PostDetail({ setIsShowDetail, clickData }: Props) {
           </div>
           {/* 우측 */}
           <div className="relative w-[40%] h-full">
+            <div className="p-1">
+              <PostHeader post={clickData} onClose={setIsShowDetail} />
+            </div>
             <Input
               defaultValue={clickData.title}
               className="border-none focus-visible:ring-0 font-bold"

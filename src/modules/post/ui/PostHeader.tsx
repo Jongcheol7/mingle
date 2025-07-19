@@ -6,6 +6,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { usePostDeleteMutation } from "@/hooks/usePostDeleteMutation";
+import { useUserStore } from "@/lib/store/useUserStore";
 import ChatWindow from "@/modules/chat/ui/ChatWindow";
 import { Post } from "@/types/post";
 import { EllipsisIcon } from "lucide-react";
@@ -23,11 +25,15 @@ const formatDate = (date: string) => {
 
 type Props = {
   post: Post;
+  onClose: (value: boolean) => void;
 };
 
-export default function PostHeader({ post }: Props) {
+export default function PostHeader({ post, onClose }: Props) {
   const [chatOpen, setChatOpen] = useState(false);
-
+  const { user } = useUserStore();
+  const { mutate: deleteMutate, isPending: isDeleting } =
+    usePostDeleteMutation();
+  console.log("디테일 헤더 ddd: ", post);
   return (
     <>
       <div className="flex items-center w-full justify-between px-3 mb-2">
@@ -49,16 +55,37 @@ export default function PostHeader({ post }: Props) {
           <DropdownMenuTrigger>
             <EllipsisIcon />
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>친구추가</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="mt-1 cursor-pointer"
-              onClick={() => setChatOpen(!chatOpen)}
-            >
-              메세지
-            </DropdownMenuItem>
-          </DropdownMenuContent>
+          {user?.id !== post.user.clerkId ? (
+            <DropdownMenuContent>
+              <DropdownMenuItem>친구추가</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="mt-1 cursor-pointer"
+                onClick={() => setChatOpen(!chatOpen)}
+              >
+                메세지
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          ) : (
+            <DropdownMenuContent>
+              <DropdownMenuItem>수정</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className={`mt-1 cursor-pointer ${
+                  isDeleting ? "disabled" : ""
+                }`}
+                onClick={() => {
+                  const confirmDelete =
+                    window.confirm("정말 삭제하시겠습니까?");
+                  if (confirmDelete) {
+                    deleteMutate({ postId: post.id, onClose });
+                  }
+                }}
+              >
+                삭제
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          )}
         </DropdownMenu>
       </div>
 

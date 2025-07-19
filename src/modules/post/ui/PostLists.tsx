@@ -50,7 +50,7 @@ export default function PostLists() {
             className="relative my-5 px-2 w-[600px]  flex flex-col items-center justify-between shadow-sm gap-4"
           >
             {/* 헤더 */}
-            <PostHeader post={post} />
+            <PostHeader post={post} onClose={setIsShowDetail} />
 
             {/* 메인 */}
             <div className="w-full flex flex-col items-start gap-2 px-2">

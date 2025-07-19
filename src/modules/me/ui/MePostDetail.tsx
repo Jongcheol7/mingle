@@ -56,7 +56,7 @@ export default function MePostDetail({ setIsShowDetail, clickData }: Props) {
               )}
           </div>
           {/* 우측 */}
-          <div className="relative w-[40%] h-full">
+          <div className="w-[40%] h-full">
             <Input
               defaultValue={clickData.title}
               className="border-none focus-visible:ring-0 font-bold"

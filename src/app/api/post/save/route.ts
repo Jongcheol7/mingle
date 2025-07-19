@@ -1,6 +1,16 @@
 import { prisma } from "@/lib/prisma";
+import { DeleteObjectsCommand, S3Client } from "@aws-sdk/client-s3";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+
+const Bucket = process.env.AWS_BUCKET_NAME;
+const s3 = new S3Client({
+  region: process.env.AWS_REGION!,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  },
+});
 
 export async function POST(request: Request) {
   const { title, content, tags, imageUrls, assetId, playbackId } =
@@ -121,6 +131,59 @@ export async function POST(request: Request) {
     console.error("POST 저장에 실패했습니다.", err);
     return NextResponse.json(
       { error: "POST 저장에 실패했습니다." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const postId = Number(searchParams.get("postId"));
+  console.log("포스트 삭제 파람 ddd : ", postId);
+
+  if (!postId) {
+    console.error("포스트 삭제할 postId가 없습니다.");
+    return NextResponse.json(
+      { error: "포스트 삭제할 postId가" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    // POST를 삭제하기 전에 S3에 있는 사진부터 삭제하자.
+    const medias = await prisma.postMedia.findMany({
+      where: { postId },
+    });
+
+    const objectToDelete = medias.map((media) => {
+      return {
+        Key: media.url.split("/").pop()!,
+      };
+    });
+
+    if (objectToDelete.length > 0) {
+      await s3.send(
+        new DeleteObjectsCommand({
+          Bucket,
+          Delete: { Objects: objectToDelete },
+        })
+      );
+    }
+
+    await prisma.post.update({
+      where: {
+        id: postId,
+      },
+      data: { deletedAt: new Date() },
+    });
+    return NextResponse.json(
+      { message: "삭제 성공", deletedId: postId },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error("POST 삭제에 실패했습니다.", err);
+    return NextResponse.json(
+      { error: "POST 삭제에 실패했습니다." },
       { status: 500 }
     );
   }

@@ -11,12 +11,12 @@ export default function PostButtons({ clickData }: Props) {
     <div className="flex gap-2 ml-3 justify-center">
       <div className="flex items-center ">
         <Heart className="w-4 cursor-pointer hover:text-rose-500 transition" />
-        {/* <p className="text-[12px] text-gray-800">{clickData.likes.length}개</p> */}
+        <p className="text-[12px] text-gray-800">{clickData.likes.length}개</p>
       </div>
       <div className="flex items-center ">
         <MessageCircle className="w-4 cursor-pointer hover:text-blue-500 transition" />
         <p className="text-[12px] text-gray-800">
-          {/* {clickData.comments.length}개 */}
+          {clickData.comments.length}개
         </p>
       </div>
       <div className="flex items-center ">
