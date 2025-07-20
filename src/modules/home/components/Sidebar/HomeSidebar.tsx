@@ -41,7 +41,7 @@ const data = {
     // },
     {
       title: "검색",
-      url: "/",
+      url: "/search",
       icon: SearchIcon,
     },
     {
