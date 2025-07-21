@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import MePostDetail from "@/modules/me/ui/MePostDetail";
+import PostDetail from "@/modules/post/ui/PostDetail";
 import { Post } from "@/types/post";
 import Image from "next/image";
 import { useState } from "react";
@@ -17,13 +17,13 @@ export default function SearchLists({ posts }: Props) {
   const [clickData, setClickData] = useState<Post>();
   console.log("posts", posts);
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mx-auto">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-4 gap-4 mx-auto">
       {posts &&
         posts.pages.map((page) =>
           page.posts.map((post: Post) => (
             <Card
               key={post.id}
-              className="w-60 h-60 relative group overflow-hidden"
+              className="aspect-square w-full relative group overflow-hidden"
             >
               {post.medias && post.medias.length > 0 && (
                 <Image
@@ -53,10 +53,7 @@ export default function SearchLists({ posts }: Props) {
           ))
         )}
       {isShowDetail && (
-        <MePostDetail
-          setIsShowDetail={setIsShowDetail}
-          clickData={clickData!}
-        />
+        <PostDetail setIsShowDetail={setIsShowDetail} clickData={clickData!} />
       )}
     </div>
   );

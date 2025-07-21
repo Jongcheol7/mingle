@@ -13,13 +13,13 @@ export default function MePostLists() {
   console.log("data", data);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mx-auto">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-4 gap-4 mx-auto">
       {data &&
         data.pages.map((page) =>
           page.posts.map((post: Post) => (
             <Card
               key={post.id}
-              className="w-60 h-60 relative group overflow-hidden"
+              className="aspect-square w-full relative group overflow-hidden"
             >
               {post.medias && post.medias.length > 0 && (
                 <Image
